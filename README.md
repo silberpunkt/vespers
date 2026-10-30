@@ -23,7 +23,7 @@ So he has no version requirement, no install step, and nothing that runs with yo
 
 ### The four you'll use
 
-**1. Select, and hear it.** Select any text on the page and press **▷ Play**. He reads it in a machine voice: the system's, or his own small onboard synthesiser. His voice is Ecouter, which has its own repository, along with Viriditas, the tone colour. Hearing words while you see them is the oldest trick there is for taking them in.
+**1. Select, and hear it.** Select any text on the page and press **▷ Play**. He reads it in a machine voice: the system's, or his own small onboard synthesiser. His voice is Ecouter, which has [its own repository](https://github.com/silberpunkt/ecouter), along with Viriditas, the tone colour. Hearing words while you see them is the oldest trick there is for taking them in.
 
 **2. Tincture.** He tints each paragraph, lightly, by its own inner structure, so you can see how it's built as you read. Underneath is the **tilt-down**: press it, and a paragraph opens into lines by its clauses, each one stepping down a rung as the thought goes deeper. Tilt again for a poetic setting; tilt back and it's as it was. It feels like walking into the control room of your own sentences, and everyone else's.
 

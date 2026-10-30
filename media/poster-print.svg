@@ -1,0 +1,307 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 2760" width="1000" height="2760" font-family="Bahnschrift, 'DIN Alternate', 'Segoe UI', Arial, sans-serif">
+<defs>
+<linearGradient id="bp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f7fbfe"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#8db9dc" stroke-width=".35" opacity=".35"/></pattern>
+<pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#06121f" stroke-width="1.2"/></pattern>
+<linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b2a4a"/><stop offset=".45" stop-color="#1f5a92"/><stop offset=".5" stop-color="#3f86d6"/><stop offset=".62" stop-color="#1f5a92"/><stop offset="1" stop-color="#0b2a4a"/></linearGradient>
+<linearGradient id="chromebar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b6470"/><stop offset=".5" stop-color="#1d2026"/><stop offset="1" stop-color="#3a414b"/></linearGradient>
+<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="glow2" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feColorMatrix in="b" type="matrix" values="0 0 0 0 .25  0 0 0 0 .55  0 0 0 0 1  0 0 0 .35 0" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1L9 5L0 9" fill="none" stroke="#2b6ea8" stroke-width="1.4"/></marker>
+<linearGradient id="chromeD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#bfe6ff"/><stop offset=".5" stop-color="#3f86d6"/><stop offset=".62" stop-color="#9fd8ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>
+<rect x="0" y="0" width="1000" height="2760" fill="url(#bp)"/>
+<rect x="0" y="0" width="1000" height="2760" fill="url(#grid)"/>
+<rect x="18" y="18" width="964" height="2724" fill="none" stroke="#2b6ea8" stroke-width="1.5" opacity=".7"/>
+<rect x="26" y="26" width="948" height="2708" fill="none" stroke="#2b6ea8" stroke-width=".6" opacity=".5"/>
+<text x="44" y="58" font-size="12" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="2" >BLUEPRINT  No. 0-7284   ·   SHEET 1 OF 1   ·   SCALE: ONE PASTE</text>
+<text x="956" y="58" font-size="12" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="2" >DRAWN 28 X 2026</text>
+<path d="M388,284 L250,180 L45,180 Q85.5,225.0 70,290 Q123.0,340.0 120,410 Q203.0,435.0 230,480 Q318.0,455.0 350,450 Q375,410 388,384 Z" fill="#dcecf8" fill-opacity=".9" stroke="#2b6ea8" stroke-width="1.6"/>
+<line x1="250" y1="180" x2="45" y2="180" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="250" y1="180" x2="70" y2="290" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="250" y1="180" x2="120" y2="410" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="250" y1="180" x2="230" y2="480" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="250" y1="180" x2="350" y2="450" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="388" y1="284" x2="250" y2="180" stroke="#16324f" stroke-width="2.4"/>
+<circle cx="250" cy="180" r="4" fill="#16324f"/>
+<path d="M250,180 l6,-16 l-10,6" fill="none" stroke="#16324f" stroke-width="1.6"/>
+<path d="M612,284 L750,180 L955,180 Q914.5,225.0 930,290 Q877.0,340.0 880,410 Q797.0,435.0 770,480 Q682.0,455.0 650,450 Q625,410 612,384 Z" fill="#dcecf8" fill-opacity=".9" stroke="#2b6ea8" stroke-width="1.6"/>
+<line x1="750" y1="180" x2="955" y2="180" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="750" y1="180" x2="930" y2="290" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="750" y1="180" x2="880" y2="410" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="750" y1="180" x2="770" y2="480" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="750" y1="180" x2="650" y2="450" stroke="#2b6ea8" stroke-width="1.1" opacity=".8"/>
+<line x1="612" y1="284" x2="750" y2="180" stroke="#16324f" stroke-width="2.4"/>
+<circle cx="750" cy="180" r="4" fill="#16324f"/>
+<path d="M750,180 l-6,-16 l10,6" fill="none" stroke="#16324f" stroke-width="1.6"/>
+<path d="M408,272 L430,202 L462,272 Z" fill="#0b1a2e" stroke="#2b6ea8" stroke-width="1.6"/>
+<path d="M592,272 L570,202 L538,272 Z" fill="#0b1a2e" stroke="#2b6ea8" stroke-width="1.6"/>
+<path d="M422,264 L430,226 L446,264" fill="none" stroke="#ff8a3c" stroke-width="1" opacity=".7"/>
+<path d="M578,264 L570,226 L554,264" fill="none" stroke="#ff8a3c" stroke-width="1" opacity=".7"/>
+<rect x="388" y="268" width="224" height="138" rx="12" fill="#0b0d10" stroke="#2b6ea8" stroke-width="2"/>
+<rect x="394" y="274" width="212" height="126" rx="8" fill="none" stroke="#1d2026"/>
+<text x="460" y="316" font-size="30" fill="#a07800" text-anchor="middle" font-weight="400" letter-spacing="0" filter="url(#glow)">↻</text>
+<text x="540" y="316" font-size="30" fill="#a07800" text-anchor="middle" font-weight="400" letter-spacing="0" filter="url(#glow)">↺</text>
+<circle cx="500" cy="308" r="5" fill="#35d6d6" filter="url(#glow)"/>
+<circle cx="546" cy="342" r="3.4" fill="#58bff0" filter="url(#glow)"/>
+<circle cx="558" cy="342" r="3.4" fill="#58bff0" filter="url(#glow)"/>
+<circle cx="570" cy="342" r="3.4" fill="#58bff0" filter="url(#glow)"/>
+<circle cx="582" cy="342" r="3.4" fill="#58bff0" filter="url(#glow)"/>
+<rect x="410" y="388" width="54" height="4" fill="hsl(260,85%,58%)"/>
+<rect x="410" y="382" width="54" height="4" fill="hsl(223,85%,58%)"/>
+<rect x="410" y="376" width="54" height="4" fill="hsl(186,85%,58%)"/>
+<rect x="410" y="370" width="54" height="4" fill="hsl(149,85%,58%)"/>
+<rect x="410" y="364" width="54" height="4" fill="hsl(111,85%,58%)"/>
+<rect x="410" y="358" width="54" height="4" fill="hsl(74,85%,58%)"/>
+<rect x="410" y="352" width="54" height="4" fill="hsl(37,85%,16%)"/>
+<rect x="410" y="346" width="54" height="4" fill="hsl(0,85%,16%)"/>
+<rect x="472" y="388" width="54" height="4" fill="hsl(260,85%,58%)"/>
+<rect x="472" y="382" width="54" height="4" fill="hsl(223,85%,58%)"/>
+<rect x="472" y="376" width="54" height="4" fill="hsl(186,85%,58%)"/>
+<rect x="472" y="370" width="54" height="4" fill="hsl(149,85%,58%)"/>
+<rect x="472" y="364" width="54" height="4" fill="hsl(111,85%,16%)"/>
+<rect x="472" y="358" width="54" height="4" fill="hsl(74,85%,16%)"/>
+<rect x="472" y="352" width="54" height="4" fill="hsl(37,85%,16%)"/>
+<rect x="472" y="346" width="54" height="4" fill="hsl(0,85%,16%)"/>
+<text x="570" y="374" font-size="10" fill="#666d76" text-anchor="middle" font-weight="400" letter-spacing="3" >VESPERS</text>
+<path d="M470,406 l-4,22 m-8,0 l4,8 m4,-8 l4,8" fill="none" stroke="#16324f" stroke-width="1.6"/>
+<path d="M530,406 l4,22 m-8,0 l4,8 m4,-8 l4,8" fill="none" stroke="#16324f" stroke-width="1.6"/>
+<line x1="460" y1="302" x2="250" y2="108" stroke="#2b6ea8" stroke-width=".8" stroke-dasharray="3 3"/>
+<circle cx="460" cy="302" r="2.2" fill="#2b6ea8"/>
+<text x="244" y="112" font-size="11.5" fill="#16324f" text-anchor="end" font-weight="600" letter-spacing="1" >CONTRAROTULUS EYES</text>
+<text x="244" y="126" font-size="11.5" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >↻ ↺ upright, amber at work</text>
+<line x1="500" y1="304" x2="600" y2="92" stroke="#2b6ea8" stroke-width=".8" stroke-dasharray="3 3"/>
+<circle cx="500" cy="304" r="2.2" fill="#2b6ea8"/>
+<text x="606" y="96" font-size="11.5" fill="#16324f" text-anchor="start" font-weight="600" letter-spacing="1" >RUN-DOT NOSE</text>
+<text x="606" y="110" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >6 px, one blink in three seconds</text>
+<line x1="428" y1="376" x2="180" y2="470" stroke="#2b6ea8" stroke-width=".8" stroke-dasharray="3 3"/>
+<circle cx="428" cy="376" r="2.2" fill="#2b6ea8"/>
+<text x="186" y="474" font-size="11.5" fill="#16324f" text-anchor="start" font-weight="600" letter-spacing="1" >BEBOX TWIN VU</text>
+<text x="186" y="488" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >one meal per paragraph, then dark</text>
+<line x1="570" y1="342" x2="770" y2="470" stroke="#2b6ea8" stroke-width=".8" stroke-dasharray="3 3"/>
+<circle cx="570" cy="342" r="2.2" fill="#2b6ea8"/>
+<text x="764" y="474" font-size="11.5" fill="#16324f" text-anchor="end" font-weight="600" letter-spacing="1" >FOUR SCAN LEDS</text>
+<text x="764" y="488" font-size="11.5" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >seen · found · decoded · applied</text>
+<line x1="570" y1="220" x2="640" y2="142" stroke="#2b6ea8" stroke-width=".8" stroke-dasharray="3 3"/>
+<circle cx="570" cy="220" r="2.2" fill="#2b6ea8"/>
+<text x="646" y="146" font-size="11.5" fill="#16324f" text-anchor="start" font-weight="600" letter-spacing="1" >EARS</text>
+<text x="646" y="160" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >the chirp ( ) and its echoes</text>
+<line x1="45" y1="560" x2="955" y2="560" stroke="#2b6ea8" stroke-width=".9" marker-start="url(#ar)" marker-end="url(#ar)"/>
+<line x1="45" y1="548" x2="45" y2="572" stroke="#2b6ea8"/><line x1="955" y1="548" x2="955" y2="572" stroke="#2b6ea8"/>
+<rect x="370" y="550" width="260" height="20" fill="#f3f8fd"/>
+<text x="500" y="565" font-size="13" fill="#16324f" text-anchor="middle" font-weight="600" letter-spacing="3" >WINGSPAN  7,284 LINES</text>
+<text x="500" y="640" font-size="40" fill="url(#chrome)" text-anchor="middle" font-weight="800" letter-spacing="6" font-style="italic" filter="url(#glow2)">ANATOMY OF A VESPERS BAT</text>
+<text x="500" y="672" font-size="15" fill="#2b6ea8" text-anchor="middle" font-weight="400" letter-spacing="1" >615,296 characters  ·  one paste  ·  no install  ·  integrated from many hands</text>
+<rect x="394" y="724" width="212" height="1392" rx="10" fill="none" stroke="#2b6ea8" stroke-width="1.4"/>
+<rect x="400" y="730.0" width="200" height="100.6" fill="#58bff0" fill-opacity=".78"/>
+<rect x="400" y="730.0" width="200" height="100.6" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="785.29754784689" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >44.9k</text>
+<line x1="400" y1="830.6" x2="600" y2="830.6" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="830.6" width="200" height="45.4" fill="#a07800" fill-opacity=".78"/>
+<rect x="400" y="830.6" width="200" height="45.4" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="858.3126495215312" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >20.3k</text>
+<line x1="400" y1="876.0" x2="600" y2="876.0" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="876.0" width="200" height="58.4" fill="#3f86d6" fill-opacity=".78"/>
+<rect x="400" y="876.0" width="200" height="58.4" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="910.205965909091" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >26.0k</text>
+<line x1="400" y1="934.4" x2="600" y2="934.4" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="934.4" width="200" height="97.9" fill="#ff8a3c" fill-opacity=".78"/>
+<rect x="400" y="934.4" width="200" height="97.9" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="988.3492822966508" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >43.7k</text>
+<line x1="400" y1="1032.3" x2="600" y2="1032.3" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1032.3" width="200" height="63.8" fill="#c9a9e8" fill-opacity=".78"/>
+<rect x="400" y="1032.3" width="200" height="63.8" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1069.21875" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >28.4k</text>
+<line x1="400" y1="1096.1" x2="600" y2="1096.1" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1096.1" width="200" height="41.5" fill="#bfeae0" fill-opacity=".78"/>
+<rect x="400" y="1096.1" width="200" height="41.5" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1121.894811602871" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >18.5k</text>
+<line x1="400" y1="1137.7" x2="600" y2="1137.7" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1137.7" width="200" height="30.7" fill="#e8a39c" fill-opacity=".78"/>
+<rect x="400" y="1137.7" width="200" height="30.7" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1158.0121112440193" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >13.7k</text>
+<line x1="400" y1="1168.4" x2="600" y2="1168.4" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1168.4" width="200" height="100.9" fill="#6fd66f" fill-opacity=".78"/>
+<rect x="400" y="1168.4" width="200" height="100.9" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1223.8243869617224" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >45.0k</text>
+<line x1="400" y1="1269.3" x2="600" y2="1269.3" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1269.3" width="200" height="126.3" fill="#f2c48a" fill-opacity=".78"/>
+<rect x="400" y="1269.3" width="200" height="126.3" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1337.4514055023924" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >56.3k</text>
+<line x1="400" y1="1395.6" x2="600" y2="1395.6" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1395.6" width="200" height="190.6" fill="#ff5c72" fill-opacity=".78"/>
+<rect x="400" y="1395.6" width="200" height="190.6" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1495.913576555024" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >85.0k</text>
+<line x1="400" y1="1586.2" x2="600" y2="1586.2" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1586.2" width="200" height="112.6" fill="#9fc6ff" fill-opacity=".78"/>
+<rect x="400" y="1586.2" width="200" height="112.6" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1647.528409090909" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >50.2k</text>
+<line x1="400" y1="1698.8" x2="600" y2="1698.8" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1698.8" width="200" height="39.9" fill="#8f98a5" fill-opacity=".78"/>
+<rect x="400" y="1698.8" width="200" height="39.9" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1723.7686901913876" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >17.8k</text>
+<line x1="400" y1="1738.7" x2="600" y2="1738.7" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1738.7" width="200" height="168.4" fill="#35d6d6" fill-opacity=".78"/>
+<rect x="400" y="1738.7" width="200" height="168.4" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="1827.873803827751" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >75.1k</text>
+<line x1="400" y1="1907.0" x2="600" y2="1907.0" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="1907.0" width="200" height="198.4" fill="#e3a33f" fill-opacity=".78"/>
+<rect x="400" y="1907.0" width="200" height="198.4" fill="url(#hatch)" opacity=".35"/>
+<text x="500.0" y="2011.2324312200958" font-size="13" fill="#06121f" text-anchor="middle" font-weight="700" letter-spacing="0" >88.4k</text>
+<line x1="400" y1="2105.4" x2="600" y2="2105.4" stroke="#06121f" stroke-width="1"/>
+<rect x="400" y="2105.4" width="200" height="4.6" fill="#ffffff" fill-opacity=".78"/>
+<rect x="400" y="2105.4" width="200" height="4.6" fill="url(#hatch)" opacity=".35"/>
+<line x1="400" y1="2110.0" x2="600" y2="2110.0" stroke="#06121f" stroke-width="1"/>
+<path d="M392,780.3 L360,780.3 L330,779.3 L310,779.3" fill="none" stroke="#58bff0" stroke-width="1"/>
+<circle cx="392" cy="780.3" r="2.5" fill="#58bff0"/>
+<text x="304" y="777.3340684808613" font-size="15" fill="#2c5f78" text-anchor="end" font-weight="700" letter-spacing="2" >GRAMMAR &amp; COLOUR SCIENCE</text>
+<text x="304" y="794.3340684808613" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >yampal courier, YAM-PAL 32, packed</text>
+<text x="304" y="808.3340684808613" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >shadow, garden, jam, OKLCH courtesy</text>
+<text x="304" y="823.3340684808613" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >44,852 characters</text>
+<path d="M392,905.2 L360,905.2 L330,903.3 L310,903.3" fill="none" stroke="#3f86d6" stroke-width="1"/>
+<circle cx="392" cy="905.2" r="2.5" fill="#3f86d6"/>
+<text x="304" y="901.2790071770336" font-size="15" fill="#2d609a" text-anchor="end" font-weight="700" letter-spacing="2" >BLUEBOX DECK</text>
+<text x="304" y="918.2790071770336" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >typing window, windowshade, the hand</text>
+<text x="304" y="932.2790071770336" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >of cards</text>
+<text x="304" y="947.2790071770336" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >26,017 characters</text>
+<path d="M392,1064.2 L360,1064.2 L330,1061.3 L310,1061.3" fill="none" stroke="#c9a9e8" stroke-width="1"/>
+<circle cx="392" cy="1064.2" r="2.5" fill="#c9a9e8"/>
+<text x="304" y="1059.3283119019138" font-size="15" fill="#645474" text-anchor="end" font-weight="700" letter-spacing="2" >SCREWBOX</text>
+<text x="304" y="1076.3283119019138" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >Muriel&#x27;s Affine Barberpole, seven</text>
+<text x="304" y="1090.3283119019138" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >lunettes, one text</text>
+<text x="304" y="1105.3283119019138" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >28,448 characters</text>
+<path d="M392,1153.0 L360,1153.0 L330,1149.2 L310,1149.2" fill="none" stroke="#e8a39c" stroke-width="1"/>
+<circle cx="392" cy="1153.0" r="2.5" fill="#e8a39c"/>
+<text x="304" y="1147.1581937799044" font-size="15" fill="#74514e" text-anchor="end" font-weight="700" letter-spacing="2" >TINCTURE .:</text>
+<text x="304" y="1164.1581937799044" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >prose toned by its own structure</text>
+<text x="304" y="1179.1581937799044" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >13,682 characters</text>
+<path d="M392,1332.5 L360,1332.5 L330,1327.6 L310,1327.6" fill="none" stroke="#f2c48a" stroke-width="1"/>
+<circle cx="392" cy="1332.5" r="2.5" fill="#f2c48a"/>
+<text x="304" y="1325.634008672249" font-size="15" fill="#796245" text-anchor="end" font-weight="700" letter-spacing="2" >PRINTER · RINGS · FLAGS</text>
+<text x="304" y="1342.634008672249" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >printer, rings and mon, tilt-downs,</text>
+<text x="304" y="1356.634008672249" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >enludes, wyrd</text>
+<text x="304" y="1371.634008672249" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >56,320 characters</text>
+<path d="M392,1642.5 L360,1642.5 L330,1636.7 L310,1636.7" fill="none" stroke="#9fc6ff" stroke-width="1"/>
+<circle cx="392" cy="1642.5" r="2.5" fill="#9fc6ff"/>
+<text x="304" y="1634.7475328947367" font-size="15" fill="#4f637f" text-anchor="end" font-weight="700" letter-spacing="2" >ROLLERS · GLINT · GLOBE</text>
+<text x="304" y="1651.7475328947367" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >rollers, sleep, glint, thinker,</text>
+<text x="304" y="1665.7475328947367" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >marble, globe, gauges</text>
+<text x="304" y="1680.7475328947367" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >50,214 characters</text>
+<path d="M392,1822.9 L360,1822.9 L330,1816.1 L310,1816.1" fill="none" stroke="#35d6d6" stroke-width="1"/>
+<circle cx="392" cy="1822.9" r="2.5" fill="#35d6d6"/>
+<text x="304" y="1814.12944826555" font-size="15" fill="#1a6b6b" text-anchor="end" font-weight="700" letter-spacing="2" >ECOUTER</text>
+<text x="304" y="1831.12944826555" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >throat, gust, chain, phones, NRL</text>
+<text x="304" y="1845.12944826555" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >rules, Lexillogue, Bell, lamp</text>
+<text x="304" y="1860.12944826555" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >75,062 characters</text>
+<path d="M392,2107.7 L360,2107.7 L330,2100.0 L310,2100.0" fill="none" stroke="#ffffff" stroke-width="1"/>
+<circle cx="392" cy="2107.7" r="2.5" fill="#ffffff"/>
+<text x="304" y="2098.0" font-size="15" fill="#3a4652" text-anchor="end" font-weight="700" letter-spacing="2" >BELL SHEETS</text>
+<text x="304" y="2115.0" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >Visible Speech in threes, shown at</text>
+<text x="304" y="2129.0" font-size="11.5" fill="#4a6a88" text-anchor="end" font-weight="400" letter-spacing="0" >the foot</text>
+<text x="304" y="2144.0" font-size="11" fill="#2b6ea8" text-anchor="end" font-weight="400" letter-spacing="0" >2,044 characters</text>
+<path d="M608,853.3 L640,853.3 L670,853.3 L690,853.3" fill="none" stroke="#a07800" stroke-width="1"/>
+<circle cx="608" cy="853.3" r="2.5" fill="#a07800"/>
+<text x="696" y="851.3126495215312" font-size="15" fill="#a07800" text-anchor="start" font-weight="700" letter-spacing="2" >FACE &amp; INSTRUMENTS</text>
+<text x="696" y="868.3126495215312" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >contrarotulus eyes, run-dot nose,</text>
+<text x="696" y="882.3126495215312" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >left-rules, BeBox twin VU</text>
+<text x="696" y="897.3126495215312" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >20,258 characters</text>
+<path d="M608,983.3 L640,983.3 L670,983.3 L690,983.3" fill="none" stroke="#ff8a3c" stroke-width="1"/>
+<circle cx="608" cy="983.3" r="2.5" fill="#ff8a3c"/>
+<text x="696" y="981.3492822966508" font-size="15" fill="#7f451e" text-anchor="start" font-weight="700" letter-spacing="2" >CHAT PAINTER</text>
+<text x="696" y="998.3492822966508" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >Highlight API: wind, riffle,</text>
+<text x="696" y="1012.3492822966508" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >shimmer, corners, the turning table</text>
+<text x="696" y="1027.349282296651" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >43,666 characters</text>
+<path d="M608,1116.9 L640,1116.9 L670,1116.9 L690,1116.9" fill="none" stroke="#bfeae0" stroke-width="1"/>
+<circle cx="608" cy="1116.9" r="2.5" fill="#bfeae0"/>
+<text x="696" y="1114.894811602871" font-size="15" fill="#76918a" text-anchor="start" font-weight="700" letter-spacing="2" >VENTILATED PROSE</text>
+<text x="696" y="1131.894811602871" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >the vented box, the deep rake</text>
+<text x="696" y="1146.894811602871" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >18,525 characters</text>
+<path d="M608,1218.8 L640,1218.8 L670,1218.8 L690,1218.8" fill="none" stroke="#6fd66f" stroke-width="1"/>
+<circle cx="608" cy="1218.8" r="2.5" fill="#6fd66f"/>
+<text x="696" y="1216.8243869617224" font-size="15" fill="#376b37" text-anchor="start" font-weight="700" letter-spacing="2" >VOICE &amp; LAMP</text>
+<text x="696" y="1233.8243869617224" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >Play, the head, the machine voice,</text>
+<text x="696" y="1247.8243869617224" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >the filter, the gears</text>
+<text x="696" y="1262.8243869617224" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >45,005 characters</text>
+<path d="M608,1490.9 L640,1490.9 L670,1490.9 L690,1490.9" fill="none" stroke="#ff5c72" stroke-width="1"/>
+<circle cx="608" cy="1490.9" r="2.5" fill="#ff5c72"/>
+<text x="696" y="1488.913576555024" font-size="15" fill="#b74252" text-anchor="start" font-weight="700" letter-spacing="2" >VIDOUTES</text>
+<text x="696" y="1505.913576555024" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >drawn, made, played, the gallery,</text>
+<text x="696" y="1519.913576555024" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >the Belagram</text>
+<text x="696" y="1534.913576555024" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >84,986 characters</text>
+<path d="M608,1718.8 L640,1718.8 L670,1718.8 L690,1718.8" fill="none" stroke="#8f98a5" stroke-width="1"/>
+<circle cx="608" cy="1718.8" r="2.5" fill="#8f98a5"/>
+<text x="696" y="1716.7686901913876" font-size="15" fill="#666d76" text-anchor="start" font-weight="700" letter-spacing="2" >SWITCHBOARD</text>
+<text x="696" y="1733.7686901913876" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >gem, flap, pupate, tin hat, composer</text>
+<text x="696" y="1747.7686901913876" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >addresses</text>
+<text x="696" y="1762.7686901913876" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >17,772 characters</text>
+<path d="M608,2006.2 L640,2006.2 L670,2006.2 L690,2006.2" fill="none" stroke="#e3a33f" stroke-width="1"/>
+<circle cx="608" cy="2006.2" r="2.5" fill="#e3a33f"/>
+<text x="696" y="2004.2324312200958" font-size="15" fill="#71511f" text-anchor="start" font-weight="700" letter-spacing="2" >VIDOUTE PAINTER</text>
+<text x="696" y="2021.2324312200958" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >the painter, its reserve, BelaCells</text>
+<text x="696" y="2035.2324312200958" font-size="11.5" fill="#4a6a88" text-anchor="start" font-weight="400" letter-spacing="0" >font (185 glyphs)</text>
+<text x="696" y="2050.232431220096" font-size="11" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="0" >88,445 characters</text>
+<text x="500.0" y="716" font-size="11" fill="#2b6ea8" text-anchor="middle" font-weight="600" letter-spacing="3" >HEAD OF FILE</text>
+<text x="500.0" y="2174" font-size="11" fill="#2b6ea8" text-anchor="middle" font-weight="600" letter-spacing="3" >FOOT OF FILE · THE LAST THING A CONSOLE SHOWS</text>
+<rect x="50" y="2200" width="400" height="250" rx="6" fill="#f3f8fd" stroke="#2b6ea8"/>
+<text x="70" y="2232" font-size="16" fill="#a07800" text-anchor="start" font-weight="700" letter-spacing="4" >SPECIFICATIONS</text>
+<text x="70" y="2262" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >CHARACTERS</text>
+<text x="430" y="2262" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >615,296</text>
+<text x="70" y="2283" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >LINES</text>
+<text x="430" y="2283" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >7,284</text>
+<text x="70" y="2304" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >PALETTE</text>
+<text x="430" y="2304" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >YAM-PAL, 32 slots</text>
+<text x="70" y="2325" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >COLOUR DIGITS</text>
+<text x="430" y="2325" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >16 marks below the period</text>
+<text x="70" y="2346" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >SKY</text>
+<text x="430" y="2346" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >16 marks above it (SKYPAL)</text>
+<text x="70" y="2367" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >PHONES</text>
+<text x="430" y="2367" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >41 (NRL Report 7948)</text>
+<text x="70" y="2388" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >BELL GLYPHS READ</text>
+<text x="430" y="2388" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >52, and 19 grey, said not dropped</text>
+<text x="70" y="2409" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >PAINTER</text>
+<text x="430" y="2409" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >CSS Custom Highlight API</text>
+<text x="70" y="2430" font-size="11.5" fill="#2b6ea8" text-anchor="start" font-weight="400" letter-spacing="1" >NETWORK</text>
+<text x="430" y="2430" font-size="12.5" fill="#16324f" text-anchor="end" font-weight="400" letter-spacing="0" >none. Nothing leaves the page</text>
+<g id="deck">
+<rect x="490" y="2200" width="460" height="250" rx="10" fill="url(#chromebar)" stroke="#cfe9ff" stroke-width="1.2"/>
+<rect x="504" y="2214" width="432" height="222" rx="6" fill="#0b0d10"/>
+<text x="520" y="2242" font-size="18" fill="url(#chromeD)" text-anchor="start" font-weight="800" letter-spacing="3" font-style="italic">\\\VESPERS</text>
+<text x="920" y="2242" font-size="10.5" fill="#7fd4ff" text-anchor="end" font-weight="600" letter-spacing="3" >BLUEBOX DECK</text>
+<rect x="530" y="2262" width="380" height="72" rx="4" fill="#120f2a" stroke="#3f86d6" stroke-width="2"/>
+<rect x="530" y="2262" width="380" height="3" fill="#3f86d6" filter="url(#glow)"/>
+<text x="550" y="2292" font-size="13" fill="#f5f5fa" text-anchor="start" font-weight="400" letter-spacing="0" font-family="Cascadia Mono, Consolas, monospace" opacity=".55">bluebox · Enter sends · Shift+Enter new line</text>
+<text x="550" y="2316" font-size="13" fill="#f5f5fa" text-anchor="start" font-weight="400" letter-spacing="0" font-family="Cascadia Mono, Consolas, monospace">Put that there.  ..] &lt;+” [^]</text>
+<circle cx="820" cy="2312" r="6" fill="none" stroke="#3f86d6"/>
+<circle cx="838" cy="2312" r="6" fill="none" stroke="#3f86d6"/>
+<circle cx="856" cy="2312" r="6" fill="none" stroke="#3f86d6"/>
+<circle cx="874" cy="2312" r="6" fill="none" stroke="#3f86d6"/>
+<path d="M530,2334 L546,2356 L894,2356 L910,2334" fill="#1a1f2a" stroke="#cfe9ff" stroke-width="1"/>
+<text x="720" y="2350" font-size="9.5" fill="#8f98a5" text-anchor="middle" font-weight="600" letter-spacing="2" >THE DOOR FLIPS DOWN WHEN YOU TYPE</text>
+<rect x="520" y="2380" width="38" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="539.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >( )</text>
+<rect x="566" y="2380" width="22" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="577.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >▭</text>
+<rect x="596" y="2380" width="30" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="611.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >\\</text>
+<rect x="634" y="2380" width="30" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="649.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >|&gt;</text>
+<rect x="672" y="2380" width="22" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="683.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >≈</text>
+<rect x="702" y="2380" width="62" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="733.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >▶ Play</text>
+<rect x="772" y="2380" width="46" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="795.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >Tint</text>
+<rect x="826" y="2380" width="62" height="24" rx="5" fill="#0b0d10" stroke="#3f86d6"/>
+<text x="857.0" y="2397" font-size="12" fill="#cfe9ff" text-anchor="middle" font-weight="400" letter-spacing="0" >Filter</text>
+<text x="720" y="2426" font-size="9.5" fill="#7fd4ff" text-anchor="middle" font-weight="600" letter-spacing="2" >AUTO-REVERSE PROSE · DOOR CLOSES ON SEND</text>
+</g>
+<rect x="60" y="2475" width="880" height="4" fill="#ff5c72" opacity=".85"/>
+<rect x="60" y="2482" width="880" height="4" fill="#ff8a3c" opacity=".85"/>
+<rect x="60" y="2489" width="880" height="4" fill="#a07800" opacity=".85"/>
+<rect x="60" y="2496" width="880" height="4" fill="#6fd66f" opacity=".85"/>
+<rect x="60" y="2503" width="880" height="4" fill="#58bff0" opacity=".85"/>
+<rect x="60" y="2510" width="880" height="4" fill="#c9a9e8" opacity=".85"/>
+<text x="500" y="2615" font-size="96" fill="url(#chrome)" text-anchor="middle" font-weight="800" letter-spacing="10" font-style="italic" filter="url(#glow2)">\\\VESPERS</text>
+<text x="500" y="2653" font-size="16" fill="#16324f" text-anchor="middle" font-weight="600" letter-spacing="5" >HEARS COLOUR  ·  SPEAKS BELL  ·  PAINTS IN PLACE</text>
+<text x="500" y="2683" font-size="12.5" fill="#2b6ea8" text-anchor="middle" font-weight="400" letter-spacing="0" >One paste into the console. He hangs, he chirps, he reads what both sides wrote.</text>
+<text x="500" y="2701" font-size="12.5" fill="#2b6ea8" text-anchor="middle" font-weight="400" letter-spacing="0" >Integrated from many hands, many sides: theory and practice, intention and evidence. quiet + plur.</text>
+</svg>

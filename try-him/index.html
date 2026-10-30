@@ -1,0 +1,227 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Beladrome: try Bela, the Vespers bat</title><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* a face that sets all three of our ranges at one width, carried beside the page so that any browser will
+     use it: Cascadia Mono (SIL Open Font License), copied from this machine's own fonts */
+  @font-face { font-family:'Drome Mono'; src:url('CascadiaMono.ttf') }
+  html, body { margin:0; background:#0b0e12; color:#cfcbc2; font:14px/1.3 'Drome Mono', Iosevka, Consolas, monospace }
+  body.day { background:#f4f1ea; color:#11161d }
+  .msg { margin:10px 14px; padding:6px 10px; background:inherit }
+  p { margin:0; white-space:normal }
+  /* in the app, Clarion sets everything in Iosevka; here Bela fell back to his own Courier, a serif. Match the app. */
+  #blinken-clock, #blinken-clock *, #bk-blue, #bk-blue *, #bk-prev, #bk-prev * { font-family:'Drome Mono', Iosevka, Consolas, monospace !important }
+  #out { margin:10px 14px; white-space:pre-wrap; font-size:12px; color:#9aa7b5 }
+  #ways { margin:10px 14px; font-size:13px } #ways b { color:#ffd23f; font-weight:400; letter-spacing:.2em }
+  #ways a { color:#58bff0; background:#0031c48c; padding:1px 8px; margin-right:6px; text-decoration:none; border:1px solid #000 }
+  #ways a:hover { border-color:#58bff0 } #ways a.on { color:#fff; border-color:#58bff0 }
+  /* the inputbox (user1: Size: [-] 5 [+] lines [// Dragover Here //] [Input image...]) */
+  #imp { margin:10px 14px; font-size:13px } #imp b { color:#ffd23f; font-weight:400; display:inline-block; min-width:2ch; text-align:center }
+  #imp a { color:#58bff0; background:#0031c48c; padding:1px 8px; margin-right:6px; text-decoration:none; border:1px solid #000 } #imp a:hover { border-color:#58bff0 }
+  #imp-drop { display:inline-block; padding:5px 22px; border:1px dashed #58bff0; color:#9aa7b5 } #imp-drop.over { background:#0031c48c; color:#fff }
+  #imp-say { color:#9aa7b5; margin-left:8px }
+  /* the pastebox (user1, 28 x 2026: "a pasteable area in the beladrome to test him on arbitrary hunks of text") */
+  #paste { margin:10px 14px; font-size:13px } #paste-box { width:calc(100% - 4px); max-width:900px; background:#0b0d10; color:#cfcbc2; border:1px solid #333; font:13px/1.35 'Cascadia Mono', Consolas, monospace; white-space:pre; overflow:auto }
+  #paste a { color:#58bff0; background:#0031c48c; padding:1px 8px; margin-right:6px; text-decoration:none; border:1px solid #000 } #paste a:hover { border-color:#58bff0 }
+  #paste-say { color:#9aa7b5; margin-left:8px }
+  #hello { margin:14px 14px 4px; padding:10px 14px; border:1px solid #58bff0; background:#0031c430; font-size:13px; line-height:1.5; max-width:900px }
+  #hello b { color:#ffd23f; font-weight:400; letter-spacing:.15em } #hello a { color:#58bff0 } body.day #hello { background:#58bff020 }
+  #land { position:fixed; inset:0; z-index:2147483647; background:#05080cdd; display:none; font-size:14px; line-height:1.5 }
+  #land.on { display:block }
+  #land .arrow { position:absolute; left:18px; top:6px; color:#ffd23f; font-size:44px; line-height:1 }
+  #land .card { position:absolute; left:70px; top:40px; max-width:560px; padding:14px 18px; border:1px solid #58bff0; background:#0031c4; color:#e8ecf2 }
+  #land .card b { color:#ffd23f; font-weight:400; letter-spacing:.15em }
+  #land .card a { color:#fff; background:#0b0e12; padding:2px 10px; margin-right:8px; text-decoration:none; border:1px solid #58bff0; display:inline-block; margin-top:8px }
+  #land .why { color:#aab8c8; font-size:12px }
+</style>
+<script>
+  // settings come in the address: painter.test.html?solid=1&day=1&courtesy=0
+  var Q = {}; location.search.slice(1).split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) Q[p[0]] = p[1]; });
+  window.BELA_SOLID = Q.solid === undefined ? 1 : +Q.solid;      // stucco unless told: Bela's own default, said outright
+  if (Q.courtesy !== undefined) window.BELA_COURTESY = +Q.courtesy;
+  if (Q.dust !== undefined) window.BELA_DUST = +Q.dust;
+  if (Q.riffle !== undefined) window.BELA_RIFFLE = +Q.riffle;
+</script>
+</head><body>
+<div id="hello"><b>BELADROME</b> &middot; a stand-in chat page, with Bela already hung on it. Nothing here talks to any server.<br>
+The pictures below are plain text: periods with marks under them. Bela reads the marks and paints the colours in place.<br>
+Find him floating over the page (drag him anywhere), then try: <b>&#9655; Play</b> on selected text to hear it, the <b>( )</b> buttons for his tricks, or paste a hunk into the box and set it as a message.
+Drop a picture on <i>Dragover Here</i> to make a shadowgram of your own. <code>__blinkenStop()</code> in the console takes him down.<br>
+To hang him in the Claude desktop app instead, see <a id="hello-repo" href="../README.md">the README</a>.</div>
+<script>(function () { // on GitHub Pages, point at the repository itself: user.github.io/repo/ is github.com/user/repo
+  var h = location.hostname, m = h.match(/^([^.]+)\.github\.io$/), seg = location.pathname.split('/')[1];
+  if (m && seg && seg !== 'try-him') document.getElementById('hello-repo').href = 'https://github.com/' + m[1] + '/' + seg + '#readme';
+})();</script>
+<div id="land" role="dialog" aria-label="To land this bat">
+  <div class="arrow">&#8598;</div>
+  <div class="card"><b>TO LAND THIS BAT</b><br>
+  Your browser is asking before it lets this page draw with WebGL or read back its own canvas.
+  Click the small icon at the <b>left of your address bar</b>, up here, and allow it. Then reload.<br>
+  <span class="why" id="land-why"></span><br>
+  <a href="#" id="land-again">Reload</a><a href="#" id="land-go">Go on without</a><br>
+  <span class="why">Without it Bela still paints, speaks and tilts. Only the Glint and the Thinker stay dark.</span></div>
+</div>
+<script>(function () {   // the landing light (user1, 28 x 2026): test before Bela hangs, so the browser's own prompt is already up
+  var why = [];
+  try { var c = document.createElement('canvas'); c.width = c.height = 4;
+    if (!(c.getContext('webgl2') || c.getContext('webgl'))) why.push('WebGL: not given to this page');
+  } catch (e) { why.push('WebGL: ' + e); }
+  try { var k = document.createElement('canvas'); k.width = k.height = 2; var x = k.getContext('2d');
+    x.fillStyle = 'rgb(12,34,56)'; x.fillRect(0, 0, 2, 2); var d = x.getImageData(0, 0, 1, 1).data;
+    if (Math.abs(d[0] - 12) > 2 || Math.abs(d[1] - 34) > 2 || Math.abs(d[2] - 56) > 2) why.push('canvas: reading back what was drawn gives something else');
+  } catch (e) { why.push('canvas: ' + e); }
+  if (/[?&]askgl=1/.test(location.search)) why.push('shown on request (askgl=1)');
+  if (!why.length) return;
+  var land = document.getElementById('land'); land.className = 'on';
+  document.getElementById('land-why').textContent = 'What he found: ' + why.join('; ') + '.';
+  document.getElementById('land-again').onclick = function (e) { e.preventDefault(); location.reload(); };
+  document.getElementById('land-go').onclick = function (e) { e.preventDefault(); land.className = ''; };
+})();</script>
+<div id="ways"><b>BELADROME</b> &nbsp; <a data-k="solid" data-v="0">dots</a><a data-k="solid" data-v="1">stucco</a><a data-k="solid" data-v="2">flat</a> &nbsp; <a data-k="day" data-v="">night</a><a data-k="day" data-v="1">day</a> &nbsp; wind: <a href="#" id="wind">off</a> &nbsp; riffle: <a data-k="riffle" data-v="0">none</a><a data-k="riffle" data-v="0.5">&#189;</a><a data-k="riffle" data-v="1">1</a><a data-k="riffle" data-v="1.5">1&#189;</a><a data-k="riffle" data-v="2">2</a><a data-k="riffle" data-v="3">3</a><a data-k="riffle" data-v="4">4</a></div>
+<div id="imp">Size: <a id="imp-less" href="#">-</a> <b id="imp-rows">5</b> <a id="imp-more" href="#">+</a> lines &nbsp; <span id="imp-drop">// Dragover Here //</span> &nbsp; <a id="imp-pick" href="#">Input image...</a><a id="imp-way" href="#" title="how the shadow is written">packed</a><a id="imp-copy" href="#" title="the whole message, shadow and all">Copy</a><a id="imp-grade" href="#" title="ladder: the glyph by how much light; garden: the glyph by its shape, from an atlas of this face">ladder</a><input type="file" id="imp-file" accept="image/*" style="display:none"> <span id="imp-say"></span></div>
+<div id="paste"><textarea id="paste-box" rows="6" spellcheck="false" placeholder="paste any hunk here: a picture and its shadow, Bell in threes, prose ... then set it into the page (Ctrl+Enter: as yours)"></textarea><br><a id="paste-yours" href="#" title="one pre-wrap div, lines parted by newlines: a message of user1's in Chat">Set as yours</a><a id="paste-reply" href="#" title="a paragraph, lines parted by br: a reply, or the Code tab">Set as a reply</a><a id="paste-clear" href="#">Clear</a> <span id="paste-say"></span></div>
+<div role="feed">
+<div class="msg"><p>A⠀SEA⠀THAT⠀TURNS  
+<br>⠀⠀⠀·⠀⠀⠀⠀⠀⠀⠀·⠀⠀⠀⠀⠀⠀⠀·⠀⠀⠀●⠀⠀⠀·  
+<br>▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>⠀⠀..̩.̭.̰̥.̩.̭.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜  
+<br>⠀⠀.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜.̠.̟.̝.̜
+<br>
+</p></div>
+<div class="msg"><p>A⠀FLAG⠀THAT⠀FLIES  
+<br>⠀●⠀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>⠀│⠀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>⠀│⠀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>⠀│⠀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  
+<br>⠀│  
+<br>⠀│⠀⠀it⠀flies⠀by⠀its⠀own⠀word  
+<br>⠀⠀.́́̅́̄̀̏̀̄́̇̀̋.̩.̗̗.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̭.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̭.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̭.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞  
+<br>⠀⠀.̗̣.̩.̗̞.̰.̞.̗̣.̩.̗̞.̰.̞.̭.̰̰.̰̰.̰̩
+<br>
+</p></div>
+<div class="msg"><p>REGISTER  
+<br>letters⠀⠀MMMMMMMMMMMMMMMM│  
+<br>a⠀boxes⠀⠀─═┬┼┤╭╮╰╯╱╲━┃┏┓╋│  
+<br>b⠀blocks⠀█▓▒░▄▀▌▐▂▃▅▆▇▎▍▙│  
+<br>c⠀dots⠀⠀⠀⣿⠿⠛⠉⠁⠂⠄⡀⢀⠠⠐⠈⡇⢸⣀⠶│  
+<br>blanks⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  
+<br>one⠀straight⠀post:⠀the⠀face⠀is⠀fit  
+<br>⠀⠀..̩.̭.̰̭.̗̗.̰̰.̰̮.̩.̭.̰̬.̠.̰̰.̰̮.̩.̭.̰̭.̞.̰̰.̰̮.̩.̭.̰̩.̟.̰̰.̰̮.̩.̭.̰̬.̩.̗̟.̰̰.̰̰.̰̰.̰̦
+<br>
+</p></div>
+<div class="msg"><p>MUNSELLS⠀TREE  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█⠀light  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█━━━━━━━━━━━━━━⠀yellow  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█  
+<br>⠀⠀⠀⠀⠀⠀⠀green⠀━━━━━━━━█  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█━━━━━━━━━━⠀red  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█  
+<br>⠀blue⠀⠀━━━━━━━━━━━━━━█  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█  
+<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀█⠀dark  
+<br>⠀⠀..̩.̬̰.̰̰.̭.̰̩.̬̭.̭̭.̬̰.̰̭.̬̰.̰̬.̬̰.̰̩.̬̰.̰̦.̬̰.̮̥.̬̰.̮̤.̬̰.̮̣.̬̰.̮̠.̬̰.̮̟.̬̰.̮̞.̬̰.̭̝.̬̰.̭̜.̬̰.̭̗.̬̰.̭̖.̰̭.̬̬.̬̬.̬̜.̬̜.̰̬.̬̝.̬̝.̬̞.̬̞.̬̟.̬̟.̬̠.̩̠.̬̣.̩̣.̬̤.̩̤.̬̥.̩̥.̬̦.̦̦.̬̤.̤̤.̬̩.̤̤.̬̩.̣̣.̬̬.̣̣.̬̬.̠̠.̬̭.̟̟.̰̤.̬̮.̞̞.̬̮.̝̝.̬̰  
+<br>⠀⠀.̝̝.̬̰.̜̜.̰̦.̬̣.̣̣.̬̟.̟̰.̰̦.̬̜.̜̰.̬̜.̜̮.̬̝.̝̮.̬̝.̝̭.̰̤.̬̞.̞̬.̰̤.̬̞.̞̩.̰̤.̬̟.̟̦.̰̤.̬̟.̟̥.̬̠.̠̥.̬̠.̠̤.̬̟.̟̟.̬̞.̞̞.̬̝.̝̝.̭.̰̦
+<br>
+</p></div>
+<div class="msg"><p>THE⠀FORD⠀BY⠀LUMA⠀FIVE<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡄⠁⠈⠁⠁⠈⠁⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<br>⠀⢀⣤⣤⣤⣤⣤⣤⣤⣴⠇⠁⠀⠀⠀⠀⠀⠀⠀⠈⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀<br>⠀⢻░▒▒▒▒░▒▒░⣶⣤⣤⣄⣄⣄⣠⣠⣴⣬⣭⣧⣶⣶⣦⣦⣴⣤⠀<br>⠀⠀..̩.̩̞.̰̰.̰̰.̰̮.̩̥.̰̥.̩̤.̩̞.̰̰.̰̰.̰̬</p></div>
+<div class="msg"><p>JOHN⠀AND⠀PEN⠀BAND<br>░⡿⡏⠗⠻⠻⠟⣠⣄⡸⠻⢻░░░⣶⣦⡦⠼⠭⢛⢻⢿░⡏⠼⠱⠕⢽░░░░░░░░░░░░░░░░░░░░░░░░░░░⣟⣯⣣⣤⣸░⣇⣄⡘⠓⠓⢃⣠⡎⣰⠋⣠⠖⢁⣀⣂⣐<br>⠋⠙⠋⠉⠙⠚⠛⠫⠼⠻⣹⣳⣫⣽⡿░░░░⣷⣼⣽⣾░░░⣴⢷░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░⣾░░░░⡟⢷⣶⣜⡋⡸⢋⡜⢃⢕⣪⡜⢅⣄<br>⣤⡆⡂⠰⠤⠤⡄⣀⣀⣀⢁⢉⢉⣩⣽░░░░░░░░⡿⠿░░⣾░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░⠿⠟⡛⠛⢩⣬⣙⢛⠟⡴⡕⡑⢕⡡⡪⠗⠓⠖<br>⣧⣦⡅⢂⠌⠑⡆⣠⣄⣄⣤⣆⣤⣼⡟⢛⢻⠿⠿░░░░⡗⢰░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░⢿░░⡷⠶⠶⠺⠟⠻⠻⠧⠝⠏⠼⠺⠪⢊⡴⠞⡓⠓<br>░░⡇⣤⡄⠨⠥⣧⣮⣶⣶⣷⣷░⣷⠏⢹⠋⠙⠟⣓░░⡟░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░⣯⣗⣼⣇⣉⣉⣉⣋⣥⣤⡉⡉⠙⠙⡉⠩⢊⠕⠙⣰⣆⠍⡃<br>░░⣦⣦⣴⣤⣴⡽⠿⠿⢿░░░░⣦⣴⣦⣦⣭⣭░░⡧⢘░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░⣻⣗⡗⠻⠟⢛⡋⠋⢊⢑⣠⠲⠎⢑⠕⢡⣴⢾⢽⡇⢉<br>⡿⠟⠏⠝⠭⠭⠧⠼⠾⠾⠽⠿⠿⠿⢿⡿░░░░░░░⣧⢸⣸░░░░░░░░░░░░░░░░░░░░░░░░░░░░⢿⢿⠿⠿⠿⢋⣨⣤⣤⣠⣠⡔⡆⡊⡌⠉⣠⣤⣞⣛⣹⢟⠇⠱<br>⡍⡉⠉⠉⠉⠉⠉⡉⢉⢉⢉⢉⢉⠹⢍⣉⡩⠭⠹⢭⣍⣩⣽⣏⣙⣹░░░░░░░░░░░░░░░░░░░░⣟⣳⣶⣧⣼⣶⢽⡏⠻⢹⢍⠭⣉⣢⣈⢸⣥⣐⣈⠘⠊⣈⣠⣤⣦⣦⣥⣦⣥⠏⠅⠤<br>⡇⠅⠈⢠⣀⡄⢐⣠⣄⣠⣄⣠⣤⣆⣸⡏⢤⣄⣄⣄⢹░░░▎░░░░░░░░░░░░░░░░░░░░░░⣟⣷░⠿⡻⣶⣶⣖⡶⡶⠾⠗⠛⠱⠓⢿░⣷⠳⣦⣦⣴⣲⣲⡶⢶⠟⡇⠰⡁⢐<br>⠀⠀..̩.̬̩.̭̰.̰̤.̬̦.̬̰.̰̩.̬̥.̬̰.̬̤.̩̰.̰̦.̬̥.̩̰.̰̤.̬̤.̩̰.̰̤.̬̣.̩̰.̰̦.̬̣.̦̰.̬̤.̩̰.̰̥.̬̣.̦̰.̬̣.̩̰.̰̤.̬̤.̩̰.̰̤.̬̥.̬̰.̬̥.̩̰.̰̥.̬̥.̬̰.̬̥.̩̰.̬̦.̬̰.̰̤.̬̥.̩̰.̰̬.̬̦.̬̰.̬̩.̭̰.̰̦.̬̦.̭̰.̬̦.̬̰.̰̤.̬̥.̩̰.̬̤.̩̰.̰̬.̬̣.̩̰.̰̤.̬̤.̬̰.̬̥.̬̰.̬̤.̬̰.̬̣.̬̰<br>⠀⠀.̰̤.̬̣.̩̰.̬̣.̬̰.̰̥.̬̤.̬̰.̰̥.̬̣.̬̰.̬̤.̭̰.̬̣.̬̰.̬̥.̭̰.̰̤.̬̤.̭̰.̬̩.̭̰.̬̦.̭̰.̬̥.̬̰.̰̦.̬̥.̩̰.̰̭.̬̤.̩̰.̰̥.̬̤.̦̰.̰̥.̬̣.̦̰.̰̭.̬̠.̥̰.̰̤.̬̣.̦̰.̬̠.̥̰.̬̣.̥̰.̬̣.̦̰.̰̤.̬̤.̩̰.̰̤.̬̣.̩̰.̬̣.̦̰.̰̮.̬̤.̩̰.̬̦.̬̰.̰̩.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̤.̬̣.̩̰.̬̤.̩̰.̰̮<br>⠀⠀.̬̤.̬̰.̰̮.̬̥.̭̰.̬̤.̭̰.̬̥.̭̰.̰̥.̬̥.̮̰.̬̤.̭̰.̬̩.̭̰.̬̦.̬̰.̬̥.̬̰.̬̤.̩̰.̰̬.̬̣.̩̰.̰̤.̬̤.̩̰.̬̣.̦̰.̬̤.̦̰.̰̬.̬̣.̦̰.̰̩.̬̠.̦̰.̬̠.̥̰.̬̣.̥̰.̬̠.̥̰.̬̣.̦̰.̰̥.̬̥.̬̰.̬̦.̭̰.̰̦.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̭.̬̣.̥̰.̬̥.̩̰.̬̦.̬̰.̰̥.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̦.̬̣.̩̰.̬̤<br>⠀⠀.̩̰.̬̥.̩̰.̬̤.̩̰.̬̣.̩̰.̰̩.̬̤.̩̰.̬̤.̬̰.̰̦.̬̥.̬̰.̬̤.̭̰.̰̤.̬̤.̬̰.̬̥.̭̰.̬̤.̭̰.̰̤.̬̣.̭̰.̬̩.̬̰.̬̦.̬̰.̬̤.̩̰.̰̤.̬̣.̩̰.̬̣.̦̰.̰̤.̬̤.̩̰.̰̤.̬̤.̦̰.̰̤.̬̣.̦̰.̰̤.̬̤.̦̰.̰̤.̬̣.̦̰.̰̩.̬̣.̥̰.̬̣.̦̰.̰̤.̬̠.̥̰.̬̟.̥̰.̬̠.̥̰.̬̣.̥̰.̬̠.̥̰.̰̦.̬̤.̩̰.̬̤.̬̰.̬̥.̬̰<br>⠀⠀.̬̤.̬̰.̬̥.̬̰.̰̤.̬̤.̩̰.̬̣.̦̰.̬̣.̥̰.̰̥.̬̠.̥̰.̰̩.̬̥.̬̰.̰̦.̬̣.̦̰.̰̭.̬̣.̩̰.̬̣.̦̰.̰̤.̬̠.̦̰.̰̤.̬̠.̩̰.̬̣.̩̰.̬̤.̩̰.̬̤.̬̰.̰̬.̬̤.̭̰.̬̤.̬̰.̬̤.̭̰.̬̥.̭̰.̰̤.̬̤.̭̰.̬̩.̬̰.̬̦.̬̰.̬̥.̩̰.̰̤.̬̤.̩̰.̬̣.̩̰.̬̣.̦̰.̬̥.̩̰.̰̥.̬̤.̦̰.̰̦.̬̣.̦̰.̬̠.̥̰.̰̬.̬̣.̦̰.̰̤<br>⠀⠀.̬̠.̥̰.̰̤.̬̣.̥̰.̬̣.̦̰.̬̤.̦̰.̬̣.̦̰.̬̤.̦̰.̬̤.̩̰.̰̤.̬̣.̦̰.̰̥.̬̠.̦̰.̬̠.̥̰.̰̰.̰̦.̬̣.̦̰.̬̤.̩̰.̰̤.̬̠.̦̰.̰̦.̬̠.̥̰.̬̠.̦̰.̬̠.̥̰.̰̤.̬̟.̥̰.̬̟.̦̰.̬̠.̦̰.̬̣.̦̰.̬̣.̩̰.̰̤.̬̠.̩̰.̰̤.̬̣.̩̰.̰̤.̬̣.̬̰.̰̦.̬̤.̬̰.̬̤.̭̰.̬̥.̭̰.̬̤.̭̰.̰̤.̬̩.̬̰.̬̦.̬̰.̰̤.̬̥.̩̰<br>⠀⠀.̰̮.̬̤.̦̰.̰̦.̬̣.̥̰.̰̤.̬̣.̦̰.̬̣.̥̰.̬̠.̥̰.̰̤.̬̣.̥̰.̰̤.̬̠.̥̰.̬̟.̥̰.̬̠.̦̰.̬̤.̬̰.̰̤.̬̤.̩̰.̰̤.̬̣.̦̰.̬̠.̥̰.̰̤.̬̣.̦̰.̬̠.̦̰.̬̠.̥̰.̰̥.̬̠.̦̰.̬̠.̥̰.̰̰.̰̤.̬̤.̩̰.̰̤.̬̣.̦̰.̬̠.̦̰.̰̰.̬̣.̦̰.̰̤.̬̣.̩̰.̬̠.̩̰.̰̤.̬̣.̩̰.̰̩.̬̣.̬̰.̬̤.̬̰.̬̥.̬̰.̬̥.̭̰.̬̦.̭̰<br>⠀⠀.̬̥.̭̰.̬̣.̬̰.̬̩.̬̰.̬̦.̬̰.̰̤.̬̦.̩̰.̰̩.̬̥.̩̰.̬̥.̦̰.̰̩.̬̤.̦̰.̰̥.̬̤.̥̰.̬̣.̥̰.̰̩.̬̠.̦̰.̬̟.̥̰.̰̤.̬̣.̩̰.̰̤.̬̤.̩̰.̬̣.̦̰.̰̥.̬̤.̩̰.̬̥.̬̰.̬̤.̩̰.̬̠.̥̰.̬̠.̦̰.̬̠.̥̰.̰̰.̰̩.̬̣.̦̰.̬̠.̥̰.̰̤.̬̠.̦̰.̰̤.̬̣.̦̰.̬̠.̦̰.̬̣.̦̰.̰̤.̬̠.̦̰.̰̤.̬̣.̦̰.̰̤.̬̣.̩̰.̰̭<br>⠀⠀.̬̤.̬̰.̬̥.̬̰.̰̤.̬̥.̭̰.̬̦.̭̰.̰̤.̬̥.̭̰.̬̣.̭̰.̬̦.̬̰.̬̥.̬̰.̬̤.̩̰.̰̩.̬̤.̦̰.̬̣.̦̰.̰̬.̬̣.̥̰.̬̠.̥̰.̰̩.̬̠.̤̰.̰̥.̬̠.̥̰.̰̤.̬̠.̦̰.̬̠.̥̰.̬̤.̦̰.̬̥.̩̰.̰̥.̬̤.̩̰.̰̤.̬̥.̩̰.̬̤.̩̰.̬̣.̦̰.̬̠.̥̰.̰̤.̬̠.̤̰.̬̠.̥̰.̬̟.̤̰.̰̰.̰̤.̬̟.̥̰.̰̤.̬̠.̥̰.̰̥.̬̠.̦̰.̰̬.̬̣<br>⠀⠀.̩̰.̰̬.̬̣.̬̰.̬̤.̬̰.̬̥.̬̰.̬̥.̭̰.̰̦.̬̦.̭̰.̬̥.̭̰.̬̤.̭̰.̬̣.̭̰.̬̦.̬̰.̬̥.̬̰.̰̤.̬̤.̩̰.̰̦.̬̤.̦̰.̬̣.̦̰.̰̩.̬̣.̥̰.̰̤.̬̠.̥̰.̰̦.̬̟.̥̰.̬̠.̥̰.̰̤.̬̣.̥̰.̰̤.̬̣.̦̰.̰̥.̬̤.̩̰.̰̥.̬̥.̩̰.̰̤.̬̤.̦̰.̰̤.̬̣.̥̰.̬̠.̤̰.̬̠.̥̰.̰̤.̬̠.̤̰.̬̟.̤̰.̰̤.̬̟.̣̰.̰̥.̬̟.̤̰.̰̭<br>⠀⠀.̬̟.̥̰.̬̠.̥̰.̰̤.̬̟.̥̰.̬̠.̥̰.̬̠.̦̰.̰̬.̬̤.̩̰.̰̥.̬̤.̬̰.̰̤.̬̥.̭̰.̰̩.̬̦.̭̰.̰̥.̬̤.̭̰.̰̥</p></div>
+<div class="msg"><p>JOHN⠀AND⠀PEN⠀BAND⠀SAFE<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░<br>⠀⠀..̩.̬̩.̭̰.̰̤.̬̦.̬̰.̰̩.̬̥.̬̰.̬̤.̩̰.̰̦.̬̥.̩̰.̰̤.̬̤.̩̰.̰̤.̬̣.̩̰.̰̦.̬̣.̦̰.̬̤.̩̰.̰̥.̬̣.̦̰.̬̣.̩̰.̰̤.̬̤.̩̰.̰̤.̬̥.̬̰.̬̥.̩̰.̰̥.̬̥.̬̰.̬̥.̩̰.̬̦.̬̰.̰̤.̬̥.̩̰.̰̬.̬̦.̬̰.̬̩.̭̰.̰̦.̬̦.̭̰.̬̦.̬̰.̰̤.̬̥.̩̰.̬̤.̩̰.̰̬.̬̣.̩̰.̰̤.̬̤.̬̰.̬̥.̬̰.̬̤.̬̰.̬̣.̬̰<br>⠀⠀.̰̤.̬̣.̩̰.̬̣.̬̰.̰̥.̬̤.̬̰.̰̥.̬̣.̬̰.̬̤.̭̰.̬̣.̬̰.̬̥.̭̰.̰̤.̬̤.̭̰.̬̩.̭̰.̬̦.̭̰.̬̥.̬̰.̰̦.̬̥.̩̰.̰̭.̬̤.̩̰.̰̥.̬̤.̦̰.̰̥.̬̣.̦̰.̰̭.̬̠.̥̰.̰̤.̬̣.̦̰.̬̠.̥̰.̬̣.̥̰.̬̣.̦̰.̰̤.̬̤.̩̰.̰̤.̬̣.̩̰.̬̣.̦̰.̰̮.̬̤.̩̰.̬̦.̬̰.̰̩.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̤.̬̣.̩̰.̬̤.̩̰.̰̮<br>⠀⠀.̬̤.̬̰.̰̮.̬̥.̭̰.̬̤.̭̰.̬̥.̭̰.̰̥.̬̥.̮̰.̬̤.̭̰.̬̩.̭̰.̬̦.̬̰.̬̥.̬̰.̬̤.̩̰.̰̬.̬̣.̩̰.̰̤.̬̤.̩̰.̬̣.̦̰.̬̤.̦̰.̰̬.̬̣.̦̰.̰̩.̬̠.̦̰.̬̠.̥̰.̬̣.̥̰.̬̠.̥̰.̬̣.̦̰.̰̥.̬̥.̬̰.̬̦.̭̰.̰̦.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̭.̬̣.̥̰.̬̥.̩̰.̬̦.̬̰.̰̥.̬̥.̬̰.̬̤.̩̰.̬̣.̦̰.̰̦.̬̣.̩̰.̬̤<br>⠀⠀.̩̰.̬̥.̩̰.̬̤.̩̰.̬̣.̩̰.̰̩.̬̤.̩̰.̬̤.̬̰.̰̦.̬̥.̬̰.̬̤.̭̰.̰̤.̬̤.̬̰.̬̥.̭̰.̬̤.̭̰.̰̤.̬̣.̭̰.̬̩.̬̰.̬̦.̬̰.̬̤.̩̰.̰̤.̬̣.̩̰.̬̣.̦̰.̰̤.̬̤.̩̰.̰̤.̬̤.̦̰.̰̤.̬̣.̦̰.̰̤.̬̤.̦̰.̰̤.̬̣.̦̰.̰̩.̬̣.̥̰.̬̣.̦̰.̰̤.̬̠.̥̰.̬̟.̥̰.̬̠.̥̰.̬̣.̥̰.̬̠.̥̰.̰̦.̬̤.̩̰.̬̤.̬̰.̬̥.̬̰<br>⠀⠀.̬̤.̬̰.̬̥.̬̰.̰̤.̬̤.̩̰.̬̣.̦̰.̬̣.̥̰.̰̥.̬̠.̥̰.̰̩.̬̥.̬̰.̰̦.̬̣.̦̰.̰̭.̬̣.̩̰.̬̣.̦̰.̰̤.̬̠.̦̰.̰̤.̬̠.̩̰.̬̣.̩̰.̬̤.̩̰.̬̤.̬̰.̰̬.̬̤.̭̰.̬̤.̬̰.̬̤.̭̰.̬̥.̭̰.̰̤.̬̤.̭̰.̬̩.̬̰.̬̦.̬̰.̬̥.̩̰.̰̤.̬̤.̩̰.̬̣.̩̰.̬̣.̦̰.̬̥.̩̰.̰̥.̬̤.̦̰.̰̦.̬̣.̦̰.̬̠.̥̰.̰̬.̬̣.̦̰.̰̤<br>⠀⠀.̬̠.̥̰.̰̤.̬̣.̥̰.̬̣.̦̰.̬̤.̦̰.̬̣.̦̰.̬̤.̦̰.̬̤.̩̰.̰̤.̬̣.̦̰.̰̥.̬̠.̦̰.̬̠.̥̰.̰̰.̰̦.̬̣.̦̰.̬̤.̩̰.̰̤.̬̠.̦̰.̰̦.̬̠.̥̰.̬̠.̦̰.̬̠.̥̰.̰̤.̬̟.̥̰.̬̟.̦̰.̬̠.̦̰.̬̣.̦̰.̬̣.̩̰.̰̤.̬̠.̩̰.̰̤.̬̣.̩̰.̰̤.̬̣.̬̰.̰̦.̬̤.̬̰.̬̤.̭̰.̬̥.̭̰.̬̤.̭̰.̰̤.̬̩.̬̰.̬̦.̬̰.̰̤.̬̥.̩̰<br>⠀⠀.̰̮.̬̤.̦̰.̰̦.̬̣.̥̰.̰̤.̬̣.̦̰.̬̣.̥̰.̬̠.̥̰.̰̤.̬̣.̥̰.̰̤.̬̠.̥̰.̬̟.̥̰.̬̠.̦̰.̬̤.̬̰.̰̤.̬̤.̩̰.̰̤.̬̣.̦̰.̬̠.̥̰.̰̤.̬̣.̦̰.̬̠.̦̰.̬̠.̥̰.̰̥.̬̠.̦̰.̬̠.̥̰.̰̰.̰̤.̬̤.̩̰.̰̤.̬̣.̦̰.̬̠.̦̰.̰̰.̬̣.̦̰.̰̤.̬̣.̩̰.̬̠.̩̰.̰̤.̬̣.̩̰.̰̩.̬̣.̬̰.̬̤.̬̰.̬̥.̬̰.̬̥.̭̰.̬̦.̭̰<br>⠀⠀.̬̥.̭̰.̬̣.̬̰.̬̩.̬̰.̬̦.̬̰.̰̤.̬̦.̩̰.̰̩.̬̥.̩̰.̬̥.̦̰.̰̩.̬̤.̦̰.̰̥.̬̤.̥̰.̬̣.̥̰.̰̩.̬̠.̦̰.̬̟.̥̰.̰̤.̬̣.̩̰.̰̤.̬̤.̩̰.̬̣.̦̰.̰̥.̬̤.̩̰.̬̥.̬̰.̬̤.̩̰.̬̠.̥̰.̬̠.̦̰.̬̠.̥̰.̰̰.̰̩.̬̣.̦̰.̬̠.̥̰.̰̤.̬̠.̦̰.̰̤.̬̣.̦̰.̬̠.̦̰.̬̣.̦̰.̰̤.̬̠.̦̰.̰̤.̬̣.̦̰.̰̤.̬̣.̩̰.̰̭<br>⠀⠀.̬̤.̬̰.̬̥.̬̰.̰̤.̬̥.̭̰.̬̦.̭̰.̰̤.̬̥.̭̰.̬̣.̭̰.̬̦.̬̰.̬̥.̬̰.̬̤.̩̰.̰̩.̬̤.̦̰.̬̣.̦̰.̰̬.̬̣.̥̰.̬̠.̥̰.̰̩.̬̠.̤̰.̰̥.̬̠.̥̰.̰̤.̬̠.̦̰.̬̠.̥̰.̬̤.̦̰.̬̥.̩̰.̰̥.̬̤.̩̰.̰̤.̬̥.̩̰.̬̤.̩̰.̬̣.̦̰.̬̠.̥̰.̰̤.̬̠.̤̰.̬̠.̥̰.̬̟.̤̰.̰̰.̰̤.̬̟.̥̰.̰̤.̬̠.̥̰.̰̥.̬̠.̦̰.̰̬.̬̣<br>⠀⠀.̩̰.̰̬.̬̣.̬̰.̬̤.̬̰.̬̥.̬̰.̬̥.̭̰.̰̦.̬̦.̭̰.̬̥.̭̰.̬̤.̭̰.̬̣.̭̰.̬̦.̬̰.̬̥.̬̰.̰̤.̬̤.̩̰.̰̦.̬̤.̦̰.̬̣.̦̰.̰̩.̬̣.̥̰.̰̤.̬̠.̥̰.̰̦.̬̟.̥̰.̬̠.̥̰.̰̤.̬̣.̥̰.̰̤.̬̣.̦̰.̰̥.̬̤.̩̰.̰̥.̬̥.̩̰.̰̤.̬̤.̦̰.̰̤.̬̣.̥̰.̬̠.̤̰.̬̠.̥̰.̰̤.̬̠.̤̰.̬̟.̤̰.̰̤.̬̟.̣̰.̰̥.̬̟.̤̰.̰̭<br>⠀⠀.̬̟.̥̰.̬̠.̥̰.̰̤.̬̟.̥̰.̬̠.̥̰.̬̠.̦̰.̰̬.̬̤.̩̰.̰̥.̬̤.̬̰.̰̤.̬̥.̭̰.̰̩.̬̦.̭̰.̰̥.̬̤.̭̰.̰̥</p></div>
+<div class="msg"><p>SUNSET⠀IN⠀HALVES⠀SMALL<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>⠀⠀..̩.̬̜̌̃̂̇.̜̣.̰̰.̰̰.̰̰.̬̝.̜̣.̰̤.̬̝̌̄̂̇.̜̣.̰̦.̬̞.̜̣.̰̤.̬̞̌̄̃̇.̜̣.̰̩.̬̞̌̄̂̇.̜̣.̬̝.̜̣.̰̦.̬̝̌̃̂̇.̜̣.̰̤.̬̜.̜̣.̰̭.̬̝̌̄̂̆.̜̠.̰̰.̰̰.̰̮.̬̞̌̅̂̆.̜̠.̰̥.̬̞̌̅̃̆.̜̠.̬̟̌̆̃̆.̜̣.̬̟.̝̣.̰̥.̬̟̌̆̄̆.̝̣.̰̬.̬̟̌̆̃̆.̝̣.̰̥.̬̟.̜̣.̬̞̌̅̃̆.̜̠.̬̞̌̅̂̆.̜̠.̰̥.̬̝̌̄̂̆.̜̠.̰̬.̬̟̌̆̃̅.̝̠.̰̰.̰̦.̬̟̌̄̂̄.̝̠.̬̟̌̃́̃.̝̠.̬̟̌̄̂̄.̝̠.̬̟̌̆̃̅.̝̠.̰̰.̬̠̌̇̃̅.̝̠<br>⠀⠀.̰̤.̬̠̌̇̄̅.̝̠.̬̠̌̈̄̅.̝̠.̬̣.̝̠.̬̣.̞̠.̬̣̌̈̅̅.̞̠.̬̣̌̉̅̅.̞̠.̬̣̌̉̅̆.̞̠.̬̤.̞̠.̬̤̌̉̆̆.̟̠.̰̤.̬̤̌̉̅̆.̞̠.̰̤.̬̣̌̉̅̅.̞̠.̬̣̌̈̅̅.̞̠.̬̣̌̈̄̅.̞̠.̬̣.̝̠.̰̤.̬̠̌̇̄̅.̝̠.̬̠̌̇̃̅.̝̠.̰̤.̬̟.̝̠.̬̟̌̆̃̅.̝̠.̰̩.̬̣̌̈̄̄.̞̟.̰̰.̰̦.̬̟̌̆̃̄.̜̝.̬̝̌̈̄̄.̜̝.̬̟.̝̞.̬̣.̝̞.̬̣.̞̟.̰̬.̬̣̌̉̄̄.̞̟.̬̤.̞̟.̬̤̌̉̅̄.̞̟.̬̤̌̊̅̄.̞̟.̬̥.̞̟.̬̥.̟̟.̬̥̌̊̆̄.̟̟.̬̥̌̋̆̄.̟̟.̬̦̌̋̇̅.̠̟.̰̥<br>⠀⠀.̬̦̌̌̈̅.̣̟.̰̦.̬̦̌̌̇̅.̠̟.̬̦̌̋̇̅.̠̟.̰̤.̬̥̌̋̆̅.̟̟.̬̥̌̊̆̄.̟̟.̬̥̌̊̅̄.̟̟.̬̥.̞̟.̬̤.̞̟.̬̤̌̉̅̄.̞̟.̬̤̌̉̄̄.̞̟.̬̣.̞̟.̬̣̌̈̄̄.̞̟.̰̦.̬̥̌̋̆̃.̟̞.̰̮.̬̥̌̉̅̃.̟̞.̬̥̌̃̂̂.̟̞.̬̤̌́́̂.̞̝.̬̟.̝̝.̬̜.̗̜.̬̟.̝̝.̬̤.̞̝.̬̥̌̄̂̂.̟̞.̬̥̌̈̅̃.̟̞.̬̥̌̋̆̃.̟̞.̰̦.̬̦.̟̞.̰̤.̬̦̌̌̆̃.̟̞.̰̤.̬̩̌̌̇̃.̠̞.̰̤.̬̩̌̍̇̃.̠̞.̬̬̌̍̈̄.̣̞.̰̤.̬̬̌̎̉̄.̤̞.̬̭.̤̞.̬̭̌̎̊̄.̥̟.̬̭̌̏̍̊.̥̟.̬̮̌̏̎̌.̩̣.̬̮<br>⠀⠀.̩̤.̬̭̌̏̍̊.̥̟.̬̭̌̎̊̄.̥̟.̬̭̌̎̉̄.̤̞.̬̬.̤̞.̬̬̌̍̈̄.̣̞.̰̤.̬̩̌̍̇̃.̠̞.̰̤.̬̩̌̌̇̃.̠̞.̬̩̌̌̆̃.̟̞.̬̦.̟̞.̬̦̌̋̆̃.̟̞.̰̤.̬̥.̟̞.̰̥.̬̬̌̍̈̂.̣̝.̰̬.̬̬̌̆̄̂.̣̝.̬̤̌́́̂.̟̜.̬̗.̗̜.̰̰.̬̟.̝̜.̬̩̌̂́̂.̠̝.̬̬̌̉̅̂.̣̝.̬̬̌̍̈̂.̣̝.̬̬̌̎̈̂.̣̝.̬̭.̣̝.̰̤.̬̭̌̏̈̂.̣̝.̬̮̌̏̉̂.̤̝.̰̥.̬̰̌̏̊̃.̥̝.̰̤.̬̰̌̏̋̃.̦̝.̬̰̌̏̌̃.̩̞.̬̰̌̏̌̄.̩̟.̬̰̌̏̎̋.̮̬.̬̰̌̏̎̌.̮̬.̰̤.̬̰̌̏̎̋.̮̬.̬̰̌̏̍̄.̬̟.̬̰̌̏̌̃.̩̞.̬̰̌̏̋̃<br>⠀⠀.̦̝.̬̰̌̏̊̃.̥̝.̰̤.̬̮̌̏̉̂.̤̝.̰̥.̬̭̌̏̈̂.̣̝.̬̭̌̎̈̂.̣̝.̰̤.̬̬.̣̝.̬̬̌̍̈̂.̣̝.̰̥.̬̦̌̅̄̇.̣̞.̰̩.̬̟.̞̞.̬̝.̜̞.̰̰.̰̬.̬̠.̞̞.̬̦.̣̞.̰̬.̬̦.̣̟.̰̤.̬̦.̤̟.̰̥.̬̦.̥̟.̬̦̌̈̆̆.̥̣.̬̭̌̋̈̆.̩̥.̬̭̌̊̇̆.̬̥.̬̦̌̇̆̆.̥̣.̬̦̌̅̄̇.̥̟.̬̦.̤̟.̰̥.̬̦.̣̟.̰̤.̬̦.̣̞.̰̰.̬̞̌̄̃̆.̝̠.̰̰.̰̰.̰̰.̰̮.̬̟̌̈̆̆.̞̠.̬̦̌̊̇̆.̣̠.̰̤.̬̦̌̋̇̆.̣̠.̰̤.̬̠̌̉̆̆.̞̠.̬̞̌̄̃̆.̝̠<br>⠀⠀.̰̰.̰̬.̬̝̌̃̃̅.̝̟.̰̰.̰̰.̰̰.̰̬.̬̝̌̄̃̅.̝̟.̬̠̌̊̆̅.̞̟.̬̦.̣̟.̰̥.̬̦̌̉̆̅.̣̟.̰̥.̬̣.̟̟.̬̝̌̄̃̅.̝̟.̬̝̌̃̃̅.̝̟.̰̰.̰̦.̬̜̌̂̂̄.̜̟.̰̰.̰̰.̰̰.̰̩.̬̝̌̅̃̅.̜̟.̬̤̌̉̅̅.̟̟.̬̦.̠̟.̬̥.̠̟.̬̥.̟̟.̰̤.̬̥̌̊̆̅.̟̟.̰̤.̬̦̌̉̅̅.̠̟.̬̦̌̊̆̅.̠̟.̬̤.̟̟.̬̝̌̆̄̅.̜̟.̬̜̌̂̂̄.̜̟.̰̰.̰̥</p></div>
+<div class="msg"><p>A⠀VOICE,⠀BY⠀LUMA<br>⠀<br>⠀<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡄⠁⠈⠁⠁⠈⠁⠐<br>⠀⢀⣤⣤⣤⣤⣤⣤⣤⣴⠇⠁⠀⠀⠀⠀⠀⠀⠀⠈⢀<br>⠀⢻░▒▒▒▒░▒▒░⣶⣤⣤⣄⣄⣄⣠⣠⣴⣬⣭⣧⣶⣶⣦⣦⣴⣤<br>⠀⠀..̩.̩̞.̰̰.̰̰.̰̮.̩̥.̰̥.̩̤.̩̞.̰̰.̰̰.̰̬</p></div>
+<div class="msg"><p>STUCCO<br>⣿⣿⣶⣤⣀⡀⠀⠀⠀the⠀glyph⠀says⠀how⠀bright<br>██████⠀⠀⠀the⠀shadow⠀says⠀what⠀hue<br>⣿⣿⣶⣤⣀⡀⠀⠀⠀the⠀reader⠀lays⠀a⠀ground,⠀and⠀the⠀two⠀sum<br>⠀⠀..̩.̗̗.̰̰.̰̰.̰̰.̰̥.̞.̰̰.̰̰.̰̰.̰̤.̬̰̌̈̄̀.̩̠.̰̬.̗̣̏̏.̰̰.̰̰.̰̰.̰̰</p></div>
+<div class="msg"><p>TWO⠀PIXELS⠀A⠀CELL<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀⠀⠀three⠀rows<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀⠀⠀six⠀pixels<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀⠀⠀tall<br>each⠀cell:⠀an⠀upper⠀half,⠀on⠀a⠀back<br>⠀⠀..̩.̬̟̌̇̀̈.̥.̬̠̌̇́̈.̤.̬̣̌̈̂̇.̤.̬̣.̗̤.̬̤̌̉̃̇.̜̣.̬̤̌̉̄̆.̜̣.̬̥̌̊̅̆.̝̣.̬̥̌̋̅̆.̞̠.̬̦̌̋̆̅.̟̠.̬̩̌̌̇̅.̟̠.̬̩̌̌̈̅.̠̟.̬̬̌̍̈̄.̣̟.̰̤.̬̩̌̌̈̅.̠̟.̬̩̌̌̇̅.̟̠.̬̦̌̋̆̅.̟̠.̬̥̌̋̅̆.̞̠.̬̥̌̊̅̆.̝̣.̬̤̌̉̄̆.̜̣.̬̤̌̉̃̇.̜̣.̬̣̌̈̂̇.̗̤.̬̣.̤.̬̠̌̇́̈.̤.̬̟̌̇̀̈.̥.̭̏̏.̰̰.̬̤̌̂̃̇.̜̣.̰̤.̬̥̌̂̃̈.̝̣.̬̥.̞̠.̬̦̌̃̄̈.̟̠.̬̩̌̃̄̉.̟̠.̬̩.̠̟.̬̬.̣̟.̬̬̌̃̄̊.̤̟.̬̭.̤̞.̬̮̌̄̅̊.̥̞.̬̮̌̄̅̋.̦̞.̰̤.̬̮̌̄̅̊<br>⠀⠀.̥̞.̬̭̌̃̄̊.̤̞.̬̬.̤̟.̬̬̌̃̄̉.̣̟.̬̩.̠̟.̬̩.̟̠.̬̦̌̃̄̈.̟̠.̬̥̌̂̃̈.̞̠.̬̥.̝̣.̬̤̌̂̃̇.̜̣.̰̤.̗̗̏̏.̰̰.̬̜̌́̂̆.̝̠.̬̜.̝̣.̬̜̌̂̃̆.̝̣.̬̜̌̂̃̇.̝̣.̬̜.̝̤.̰̤.̬̝̌̂̃̈.̞̤.̬̝.̞̥.̬̝̌̃̄̈.̞̥.̬̝̌̃̄̉.̞̥.̬̝.̞̦.̰̦.̬̝.̞̥.̬̝̌̃̄̈.̞̥.̬̝̌̂̃̈.̞̥.̬̝.̞̤.̬̜̌̂̃̇.̝̤.̰̤.̬̜.̝̣.̬̜̌̂̃̆.̝̣.̬̜̌́̂̆.̝̣.̬̜.̝̠.̗̗̏̏.̰̦.̗̟.̰̰.̰̰.̰̰.̰̦</p></div>
+<div class="msg"><p>HAYSTACK<br>Heg-stakkr<br>░░▒▒▓▓▓▒▒░░░▒▒▓█▓▒▒░░▒▒▓▓▒▒░░░<br>▒▒▓▓▓▒▒░░░▒▒▓▓▓▒▒▒▄▒▒▓▓▒▒░░░░░<br>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▛██▜▄▄▄▄▄▄▄▄▄▄<br>▓▒▓▒▓▓▒▓▒▓▓▒▓█████████▓▒▓▓▒▓▒▓<br>▚▞▚▞▚▞▚▞▚▞▚▞▙█████████▟▚▞▚▞▚▞▚<br>..̗̦.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̣.̗̣.̗̣.̗̣.̗̣.̗̤.̗̤.̗̤.̗̣.̗̣.̗̣.̗̣.̗̣.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̣.̗̦.̗̣.̗̣.̗̣.̗̣.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̠.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̦.̗̦.̗̩.̗̩.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̥.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̦.̗̦.̗̦.̗̦.̗̦.̗̩.̗̩.̗̩.̗̩.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̭.̗̭.̗̭.̗̭.̗̭.̗̭.̗̩.̗̦.̗̦.̗̦.̗̦.̗̦.̗̩.̗̩.̗̩.̗̩.̗̩.̗̬.̗̭.̗̬.̗̭.̗̬.̗̭.̗̬</p></div>
+<div class="msg"><p>PACKED HAYSTACK<br>Heg-stakkr<br>░░▒▒▓▓▓▒▒░░░▒▒▓█▓▒▒░░▒▒▓▓▒▒░░░<br>▒▒▓▓▓▒▒░░░▒▒▓▓▓▒▒▒▄▒▒▓▓▒▒░░░░░<br>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▛██▜▄▄▄▄▄▄▄▄▄▄<br>▓▒▓▒▓▓▒▓▒▓▓▒▓█████████▓▒▓▓▒▓▒▓<br>▚▞▚▞▚▞▚▞▚▞▚▞▙█████████▟▚▞▚▞▚▞▚<br>⠀⠀.̗̗̥̝̗̜.̤̝̖̗̣̗.̗̖̥̖̥̖.̥̖̖̖̭̝.̜̤̤̜̜̤.̞̖̖̦̞̥.̟̦̗̜̖̭.̞̤̞̥̞̥.̞̩̜̝̣̤.̝̜̩̜̞̤.̟̖̖̦̖̞.̦̞̤̗̖̖.̞̟̟̞̗̠.̖̜̦̞̮̗.̩̜̝̖̠̥̖̖</p></div>
+<div class="msg"><p>PACKED JOHN⠀AND⠀PEN⠀WHOLE<br>⡃⠇⡄⣠⣠⣠⣠⣠⣤⣤⣰⣆⣰⣤⣆⣰⣴⣦⣤⣴⣇⣤⣴⣦⣤⣤⣴░░░░░░⣷⣇⣄⣄⣄⣠⣤⣤⣤⣤⣤⣄⣄⣄⡄⠁⠠⣀⣀⣀<br>⡄⡄⡀⠊⠉⠒⠲⢴⣴⣦⣴⣦⣴⣶⣶⣦⣾⣧⣼⣾⣷⣶⣾░⣶⣶⣾░░░░░░░⣷⣤⣤⣰⣲⣼⠽⠟⠛⠛⠋⠋⠸⠇⡄⣀⢠⣀⣀<br>⣶⣤⣄⣄⣄⠒⠤⢄⣐⡉⣙⣧⣾░░░▂░▂░▂░░░░░░░░░░░░░░⣶⣦⣸⣼⣽⣮⣥⣴⣤⣤⣄⣈⣄⣀⡠⢠⠔⠒<br>░⡟⣤⣴⡧⠰⢸⣦⣶⣶⡛⠿░░░░░░⢻░░░░░░░▂░░░░░░░░▂▂⣾░⣛⠛⣋⡉⠩⡨⠩⠙⢤⢆⠖⠉⣀⣀<br>⠿⠟⠛⠛⢳⣤⣬⣭⢿░⣷⣧⣚⣚⣙⣛⣏⡏⢋░░░░░░░░░░░░░░░░░░░░⣶⣦░⣧⣦⣅⣡⡴⡥⣁⢌⣠⣠⡤<br>⣄⡄⠤⠤⠉⠉⡉⠙⠛⢻░░░░░░⠿░░░░░░░░░░░░░░░░░░░░░░░░⠿⠟⢛⣍⡛⠗⢴⣃⢎⠝⠭⠥<br>⣷⣆⣠⠉⣠⣤⣤⣴⣴░⡹⡏⠻⢻░░⣰░░░▂░░░░░░░░░░░░░░░░░⣟⡿⠿⠷⡬⠛⠛⠛⠛⠙⠙⠋⢰⡩⠍<br>░⡧⣬⣄⣤⠿⠿⣾░░⣥⣥⣤⣼░░⢸░░░░░░░░░░░░░░░░░░░░░⣾⣶⡦⡶⠟⠛⠕⣄⢤⠍⡰⣠⣴⣦⠍<br>⠿⠛⠙⠋⠛⠛⠻⠟⠻⠿⠿⢿⢿░░░⣰⣼░░░▂░░░░░░░░░░░░░░⡿⠿⠿⠟⠭⢥⡦⠍⠸⠋⠎⣠⣤⠯⠽⡏⠉<br>⡆⠃⢠⡠⢠⣠⣠⣠⣠⢸⡖⣁⣈⢙⣶░░░░░░░░░░░░░░░░░⣷⣾⢿⣼⣥⣬⣥⠵⠗⠍⢷⣦⢦⣤⣬⢭⢭⡭⡏⡁⠰<br>⣇⡀⢠⣠⣠⣠⣤⣴⣦⢼⡏⠹⠏⠻░░░░░░░░░░░░░░░░░▂▂▂▂⣽⣏⣥⣥⣤⠛⢃░░⣈⢻⣛⡽⢛⣴⠇⡠⡠<br>⡷⢴⢲⣲⣦⣘⣸⣻⡷⠞⠷⡶⢶⡦⢛⣛⣹▂▂░░░░░░░░░░░▂░░⡷⡧⡧⠺⡜⠛⠶⠇⠸⢿⠟⣦⡞⢹⢶▎⠋⠊⠉⠘<br>⠋⠉⠙⠹⠽⣼⣾⣷⣶⣶⣶▂▂░░▂▂▂▂▂░▂▂▂▂▂▂▂▂▂░▎⣷⣶⣦⣦⣦⣤⣤⣤⢤⣄⢹⣴░▎▍▍▍▎▎▎⢐<br>⢀⣀⣤⣴⣾▂░░░░░░░░░░░░░░░░░░░░░░░░░⡿⠿⠻⠟⠻⠻⠛⠛⠏⠸⠙⢸⠻░⡟⣙⣁⢡⢍⣅⠍⠘<br>░░░░░░░░░░░░░░░░░░░░░░░░░▎░░░░⡟⠟⠛⠛⠛⠛⠛⠋⠙⠋⠙⠋⠸⠧⠛⠋⠉⠉⠘⠉⠉⠉⠉<br>⠀⠀.̗̗̞̟̟̝.̭̩̣̗̬̝.̝̖̖̬̗̩.̦̖̞̝̣̣.̖̞̤̰̦̖.̗̗̝̤̖̜.̣̰̦̜̥̣.̥̭̝̩̤̭.̦̖̗̗̰̦.̞̩̬̥̣̠.̟̩̤̖̰̜.̟̭̝̮̦̬.̞̤̤̮̖̖.̖̜̜̖̰̭.̟̟̟̩̭̠.̜̞̟̗̞̠.̖̬̩̰̦̰.̠̖̝̗̬̞.̮̭̩̟̰̭.̦̟̥̖̞̝.̥̜̥̗̜̟.̞̥̖̦̦̰.̗̖̬̝̞̤.̥̜̩̟̮̤.̬̤̝̦̭̠.̠̭̩̟̰̣.̬̰̭̗̰̣.̟̠̥̞̣̤.̮̖̠̮̖̜.̗̭̤̬̖̝.̠̗̣̬̠̬.̮̗̰̭̤̭.̠̟̣̗̥̠.̥̗̝̞̮̦.̞̩̦̜̦̠.̠̠̮̰̞̮.̤̮̭̦̦̬.̮̤̟̬̬̟.̠̜̖̖̗̮.̜̬̗̝̟̣.̮̟̞̞̜̭.̜̰̠̰̟̗.̖̤̩̭̥̜.̗̦̟̖̩̥.̤̰̖̟̝̞.̦̤̥̣̦̜.̟̠̜̥̦̭.̠̖̣̣̣̝.̖̣̜̠̰̖.̭̟̩̠̣̣.̣̩̩̤̠̥.̖̟̭̦̠̥.̟̟̣̝̥̩.̦̟̠̗̜̗.̣̮̭̞̟̠.̥̟̣̣̩̥.̗̞̗̞̩̬.̰̥̤̝̰̭.̟̟̦̞̦̦.̮̝̟̗̦̜.̮̤̞̥̮̰.̦̟̤̗̖̗.̞̩̮̥̟̠.̣̩̮̥̣̩.̮̣̝̰̣̣.̥̗̮̥̩̮.̮̖̥̟̠̟.̟̥̥̞̮̰.̦̗̗̭̖̞.̞̩̮̖̰̤.̗̖̗̖̟̤.̩̩̥̟̣̮.̩̞̣̟̬̩.̣̟̤̰̤̬.̦̖̗̬̗̰.̥̗̣̩̗̠<br>⠀⠀.̝̮̜̩̥̖.̣̖̟̗̗̬.̜̰̝̜̝̦.̝̗̦̠̮̤.̟̦̠̗̦̜.̥̝̮̬̠̤.̩̖̦̤̗̮.̤̗̣̭̤̤.̗̤̝̤̜̤.̩̬̬̜̣̬.̩̦̖̖̜̠.̬̜̭̥̗̣.̝̖̣̩̗̜.̮̦̤̠̦̤.̦̣̟̗̦̦.̬̮̜̦̩̞.̗̝̞̮̩̠.̤̩̗̜̗̤.̜̥̣̟̝̦.̝̮̥̜̣̩.̝̮̮̤̗̝.̝̤̜̖̞̣.̰̠̰̠̩̥.̖̩̜̰̣̟.̟̜̩̩̝̥.̞̮̝̭̭̜.̤̖̰̜̣̗.̩̝̰̤̤̭.̰̟̞̬̥̬.̦̝̖̥̜̗.̦̩̮̮̭̤.̭̭̖̝̟̝.̜̮̥̞̬̰.̖̥̟̥̖̮.̭̜̬̠̖̥.̜̬̥̮̖̞.̟̤̮̝̥̠.̝̖̟̦̟̣.̖̦̩̰̤̥.̠̥̜̜̖̝.̥̠̞̣̗̩.̰̠̥̟̜̠.̝̝̥̤̭̮.̖̥̤̜̦̗.̝̮̰̤̮̤.̗̦̗̝̞̞.̭̭̜̩̣̮.̤̝̤̗̩̩.̗̥̬̝̤̬.̥̜̠̟̩̟.̬̝̝̤̜̝.̗̬̖̠̬̬.̖̗̞̰̦̩.̗̣̣̜̝̭.̰̜̝̥̬̝.̭̩̮̭̰̝.̩̖̞̮̗̤.̞̣̝̞̭̜.̣̠̬̬̭̮.̰̩̮̣̬̦.̭̮̬̩̭̦.̬̠̭̮̮̠.̠̝̭̠̣̗.̣̟̝̟̬̞.̟̭̖̬̜̤.̜̗̦̭̣̦.̣̜̗̣̝̝.̜̰̮̭̣̖.̭̗̥̞̤̰.̰̬̤̰̖̠.̰̩̜̣̰̥.̞̰̠̰̣̦.̰̗̝̠̦̝.̖̟̗̩̤̮.̞̜̖̝̞̬.̜̰̥̖̜̤<br>⠀⠀.̝̮̰̭̬̣.̖̣̤̞̗̟.̦̦̟̝̰̩̖̣</p></div>
+<div class="msg"><p>PACKED⠀SUNSET⠀IN⠀HALVES⠀SMALL<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀<br>⠀⠀.̗̝̜̭̟̗.̞̗̣̠̭̝.̝̖̗̖̣̭.̭̤̥̝̞̖.̮̥̦̮̩̬.̬̣̖̗̠̤.̗̦̮̰̠̥.̮̭̮̮̠̥.̥̬̮̮̤̩.̭̝̖̩̩̞.̮̥̖̟̥̬.̰̞̖̖̜̟.̮̟̖̖̞̖.̟̰̖̰̟̖.̠̮̖̖̣̭.̬̖̩̜̩̗.̠̞̞̩̤̦.̗̭̠̰̟̤.̣̗̖̟̣̦.̖̖̝̥̖̥.̝̟̣̰̥̬.̩̬̭̗̭̣.̬̬̰̬̰̥.̜̝̟̩̦̝.̰̩̠̣̭̩.̟̝̦̰̦̮.̮̩̬̞̩̝.̤̥̩̣̗̖.̥̮̗̟̭̮.̟̜̣̤̖̤.̞̗̞̬̩̭.̣̰̞̥̩̣.̦̮̥̰̞̞.̩̣̗̜̟̭.̮̥̬̥̬̝.̞̦̗̮̦̮.̣̤̰̣̞̞.̗̣̟̬̭̜.̟̭̬̥̦̖.̟̮̬̤̠̖.̠̭̣̟̗̦.̭̤̝̞̞̤.̤̝̜̬̬̤.̰̦̠̩̟̝.̣̭̣̟̠̦.̟̟̭̰̠̮.̰̜̣̟̭̥.̩̜̣̠̥̥.̤̟̠̤̭̬.̞̭̣̠̮̟.̞̗̣̠̥̖.̤̟̦̩̜̬.̟̞̤̭̮̥.̟̖̖̰̭̤.̬̬̩̖̝̜.̮̝̤̟̗̥.̥̦̦̗̟̭.̗̝̣̦̜̝.̬̤̠̖̖̩.̗̭̝̭̮̥.̞̤̞̣̮̦.̞̤̮̮̞̰.̣̣̮̞̩̮.̝̦̮̜̞̬.̞̣̖̩̗̝.̟̥̦̬̭̥.̝̥̟̠̝̮.̩̜̰̥̦̞.̥̤̗̞̝̣.̬̟̬̭̰̬.̬̣̰̬̜̣.̰̩̠̜̥̜.̞̰̞̖̝̣.̮̟̟̥̠̞.̠̖̟̠̞̣.̟̟̗̮̦̰<br>⠀⠀.̰̜̟̤̥̭.̝̬̮̬̭̞.̰̜̮̭̮̬.̜̬̤̰̭̥.̤̦̭̤̗̠.̰̗̰̬̞̝.̟̟̣̮̩̠.̮̟̟̭̰̥.̩̭̩̬̜̰.̗̰̬̩̞̣.̤̩̞̭̜̜.̩̥̖̝̤̩.̟̦̬̗̜̦.̗̠̟̣̠̠.̩̞̥̞̩̭.̦̞̟̝̦̰.̭̜̥̮̗̥.̦̭̬̬̭̤.̥̦̮̩̬̦.̭̬̥̤̭̩.̮̜̟̣̦̗.̬̭̜̭̜̜.̦̞̜̖̞̣.̩̟̖̤̝̖.̮̣̜̣̭̥.̝̣̥̣̗̠.̜̩̮̭̜̝.̟̰̜̟̝̮.̝̤̮̬̠̥.̠̤̬̠̥̖.̟̟̭̥̜̖.̰̗̬̗̜̭.̦̠̣̩̮̖.̥̣̬̥̥̮.̬̜̜̤̰̞.̟̖̖̰̝̖.̖̠̬̩̮̝.̟̖̤̝̠̞.̖̰̩̟̬̦.̦̗̬̞̣̩.̞̗̬̜̠̩.̥̝̝̤̣̞.̮̗̟̩̬̤.̗̗̣̣̟̩.̜̞̩̩̜̮.̬̥̬̖̦̗.̝̞̠̤̟̗.̭̦̣̣̗̩.̬̰̝̥̰̝.̖̜̞̤̣̭.̜̜̭̗̞̗.̰̰̜̩̦̣.̰̗̦̥̮̰.̟̜̬̠̖̤.̗̭̟̜̠̗.̥̩̭̞̬̖.̜̗̬̭̝̤.̜̟̭̜̗̣.̜̮̩̬̭̩.̮̞̬̬̦̩.̩̖̭̟̮̤.̝̜̩̰̭̟.̰̞̦̥̗̮.̟̗̣̦̖̖.̩̮̩̣̞̟.̗̦̩̗̤̮.̗̬̝̜̟̗.̥̩̬̬̩̥.̞̝̝̝̬̠.̭̤̦̟̰̬.̗̦̗̤̦̰.̮̝̭̥̭̖.̠̥̠̦̦̬.̠̗̜̭̰̣.̦̤̗̮̰̤.̝̝̣̬̮̝<br>⠀⠀.̝̭̰̮̮̥.̤̭̞̝̖̰.̝̩̜̰̞̥.̬̖̜̩̮̞.̩̝̩̝̝̠.̮̟̦̤̮̟.̩̗̞̩̞̟.̮̬̟̖̝̗.̣̗̠̥̰̮.̤̟̠̤̰̮.̭̟̦̗̰̜.̖̰̰̖̞̤.̤̭̮̣̥̬.̣̥̦̮̗̣.̝̗̮̩̗̭.̰̞̟̗̭̝.̟̰̟̬̮̗.̬̮̮̰̰̤.̭̬̮̣̝̞.̭̭̬̗̝̣.̞̰̣̖̬̮.̗̟̰̞̟̣.̜̭̜̦̮̗.̬̩̞̰̜̮.̥̟̣̣̬̖.̝̣̬̞̖̥.̜̖̤̖̩̰.̣̬̩̠̩̩.̰̠̩̰̝̣.̝̬̭̣̟̥.̬̣̰̦̞̭.̝̰̥̰̜̭.̤̰̟̰̥̝.̩̦̬̖̩̰.̣̮̬̞̩̭.̜̮̝̗̗̩.̬̞̰̜̣̤.̥̩̞̞̭̖.̠̮̣̤̣̝.̤̥̰̩̖̗.̗̦̩̗̖̤.̤̤̗̜̗̰.̮̰̮̞̤̝.̗̰̩̠̞̤.̖̝̗̬̜̣.̣̤̥̝̠̥.̦̣̞̭̭̜.̮̣̭̥̠̰.̦̗̩̠̥̮.̩̥̗̥̠̜.̩̮̥̤̰̣.̩̞̰̝̗̰</p></div>
+<div class="msg"><p>GREAT⠀UTTERANCES<br>Let⠀there⠀be⠀light⠀⠀⠀⠀⠀⠀(:)⠀&gt;|;⠀[^]⠀⠀⠀(‘)⠀&gt;|;⠀(r)⠀⠀⠀.-]⠀&gt;|’<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(:)⠀&lt;|,⠀&gt;|”⠀[^]<br>Fiat⠀lux⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀..)⠀&gt;|’⠀⠀⠀&lt;|,⠀[^]⠀⠀⠀(:)⠀&lt;+’⠀[..⠀(^}<br>What⠀hath⠀God⠀wrought⠀⠀⠀{-)⠀&lt;|;⠀[^]⠀⠀⠀(o)⠀&gt;|,⠀(^)⠀⠀⠀[-.⠀&lt;|,⠀[‘]<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(r)⠀&lt;+;⠀[^]<br>Mary⠀had⠀a⠀little⠀lamb⠀⠀{-]⠀&gt;|;⠀(r)⠀&gt;|’⠀⠀⠀(o)⠀&gt;|,⠀[‘]⠀⠀⠀x|:<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(:)⠀&gt;|”⠀[^]⠀x|:⠀(:)⠀⠀⠀(:)⠀&gt;|,⠀{-]<br>Mr.⠀Watson,⠀come⠀here.⠀⠀{-]⠀&gt;|”⠀(^}⠀[^]⠀x|:⠀(r)⠀⠀⠀{-)⠀&lt;|,⠀[^]⠀(^}⠀x|:⠀[’}<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[..⠀&lt;|;⠀{-]⠀⠀⠀(o)⠀&gt;|’⠀(r)<br>I⠀want⠀to⠀see⠀you.⠀⠀⠀⠀⠀⠀&lt;|,⠀&gt;|”⠀⠀⠀{-)⠀&lt;|,⠀[‘}⠀[^]⠀⠀⠀[^]⠀&lt;+’⠀⠀⠀(^}⠀&gt;|’<br>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(|)⠀&lt;+’<br>Eureka⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(|)⠀&lt;+”⠀(r)⠀&gt;|’⠀[..⠀x|:<br>Amen⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀&lt;|,⠀⠀⠀{-]⠀&gt;|;⠀[‘}<br>Shalom⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀(_}⠀&lt;|,⠀⠀⠀(:)⠀&lt;+:⠀{-]<br>Aloha⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀x|:⠀⠀⠀(:)⠀&lt;+:⠀⠀⠀(o)⠀&lt;|,<br>⠀⠀..̜.̭.̰̰.̰̭.̟.̰̥.̩.̰̥.̝.̰̬.̩.̰̥.̝.̰̥.̞.̰̥.̩.̰̥.̟.̰̥.̗̠.̰̥.̩.̰̥.̝.̰̥.̭.̰̭.̞.̰̥.̩.̰̥.̗̠.̰̥.̝.̰̥.̟.̰̥.̗̠.̰̥.̗̣.̰̥.̝.̰̥.̭.̰̰.̰̰.̰̤.̞.̰̥.̗̠.̰̥.̝.̰̥.̗̖.̰̥.̩.̰̥.̝.̰̥.̗̣.̰̥.̗̠.̰̥.̝.̰̬.̗̠.̰̥.̝.̰̥.̭.̰̰.̰̰.̰̤.̞<br>⠀⠀.̰̥.̩.̰̥.̝.̰̥.̩.̰̥.̗̖.̰̥.̩.̰̥.̝.̰̥.̗̥.̰̥.̟.̰̥.̩.̰̥.̝.̰̥.̗̥.̰̥.̟.̰̬.̩.̰̥.̞.̰̥.̭.̰̰.̰̰.̰̥.̞.̰̥.̩.̰̥.̝.̰̬.̗̥.̰̥.̝.̰̥.̞.̰̥.̗̠.̰̥.̝.̰̬.̗̥.̰̥.̝.̰̥.̗̣.̰̥.̗̠.̰̥.̞.̰̥.̗̖.̰̥.̩.̰̥.̝.̰̥.̭.̰̰.̰̬.̗̠.̰̥.̩.̰̥.̞.̰̥.̗̠.̰̥<br>⠀⠀.̝.̰̰.̗̠.̰̥.̝.̰̥.̩.̰̥.̣.̰̥.̗̠.̰̥.̭.̰̬.̣.̰̥.̗̠.̰̥.̝.̰̥.̩.̰̥.̗̣.̰̥.̗̥.̰̥.̭.̰̦.̗̠.̰̥.̞.̰̥.̩.̰̥.̝.̰̥.̭.̰̬.̣.̰̥.̗̠.̰̥.̟.̰̥.̗̠.̰̥.̞.̰̥.̭.̰̩.̗̥.̰̥.̟.̰̥.̗̠.̰̥.̗̖.̰̥.̗̠.̰̥</p></div>
+<div class="msg"><p>A line of plain prose, which must stay plain.</p></div>
+</div>
+<pre id="out">not run</pre>
+<script>if (Q.day) document.body.className = 'day';</script>
+<script src="../vespers.js"></script>
+<script>
+  // THE CHECKS. Each is a name and a truth. They are written into #out as lines, PASS or FAIL.
+  (function () {
+    var out = [], pass = 0, fail = 0;
+    function t(name, ok, info) { if (ok) pass++; else fail++; out.push((ok ? 'PASS ' : 'FAIL ') + name + (info !== undefined ? '  [' + info + ']' : '')); }
+    function rules() { var s = document.getElementById('bk-hl-style'); return s ? s.textContent : ''; }
+    function count(hay, needle) { return hay.split(needle).length - 1; }
+    var PICS = 16;
+    try {
+      t('the browser has the Highlight API', !!(window.CSS && CSS.highlights));
+      t('Bela hung, and offers his painter', typeof window.__belaPaint === 'function');
+      var n1 = window.__belaPaint(true);     // the whole page: the checks must not depend on the window or the scroll
+      t('first chirp paints every picture', n1 === PICS, n1 + ' of ' + PICS);
+      t('paint was registered', CSS.highlights.size > 0, CSS.highlights.size + ' highlights');
+      var why = window.__belaWhy();
+      t('he says the art was found for each', count(why, 'ART FOUND') >= PICS, count(why, 'ART FOUND'));
+      var n2 = -9, threw = '';
+      try { n2 = window.__belaPaint(true); } catch (e) { threw = String(e); }
+      t('a second chirp does not throw', !threw, threw);
+      t('and paints the same again', n2 === PICS, n2);
+      var n3 = -9; threw = '';
+      try { n3 = window.__belaPaint(true); } catch (e) { threw = String(e); }
+      t('nor a third', !threw && n3 === PICS, threw || n3);
+      t('the shadows are faded to dust', count(rules(), 'rgba(') > 0 || window.BELA_DUST === 1, count(rules(), 'rgba('));
+      var stats = window.__belaStats();
+      t('a picture that chose its own backs has them, however the rest is painted', stats.flat > 0, stats.flat + ' two-colour rules');
+      t('and stucco adds grounds of its own', window.BELA_SOLID ? stats.flat > 60 : stats.flat <= 400, stats.flat);
+      t('by day a painting brings its own night; by night it trusts the page',
+        (count(rules(), 'background-color:#000000') > 0) === !!(Q.day && window.BELA_SOLID), count(rules(), 'background-color:#000000'));
+      var said = window.__belaCycle([6, 5, 3, 2], 60), turning = parseInt(said, 10);
+      t('the table turns for the sea', turning > 0, said);
+      var cs = document.getElementById('bk-cycle-style');
+      t('by a second sheet, and no cell touched', !!cs && cs.textContent.length > 0, cs ? cs.textContent.length + ' chars' : 'no sheet');
+      t('and is stilled again', window.__belaCycle() === 'the table is still' && cs.textContent === '');
+      var plain = document.querySelectorAll('.msg p'), lastP = plain[plain.length - 1];
+      t('plain prose is left alone', lastP.textContent.indexOf('plain prose') > 0);
+      var sky = document.getElementById('bk-sky-style'), skyRules = sky ? count(sky.textContent, '::highlight(') : 0;
+      t('the flag turns by its own word, with no command given', skyRules > 0, skyRules + ' rules');
+      t('and only the flag: five colours, after three chirps', skyRules === 5, skyRules);
+      var st2 = window.__belaStats();
+      t('long shadows are closed up, by their line breaks alone', st2.jammed > 0 && document.querySelectorAll('.msg p span').length === 0, st2.jammed + ' breaks styled, no text wrapped');
+      t('a packed shadow is read and painted, and left as dust to be seen', count(rules(), 'rgba(0,0,0,0)') === 0 && count(why, 'ART FOUND') >= PICS, count(rules(), 'rgba(0,0,0,0)') + ' clear rules');
+      t('paintings riffle; a picture that turns, and the boards, do not', (st2.riffling > 0 && st2.riffling < PICS && st2.riffleKeys > 0) || window.BELA_RIFFLE === 0, st2.riffling + ' pictures, ' + st2.riffleKeys + ' colours');
+      t('a painted block wears its corner, the plain one does not', document.querySelectorAll('#bk-corners div').length === 2 * PICS && [].every.call(document.querySelectorAll('.msg p'), function (p) { return !p.style.boxShadow; }), document.querySelectorAll('#bk-corners div').length / 2 + ' corners');
+      if (window.__extraChecks) window.__extraChecks(t, rules, count);
+    } catch (e) { t('the checks ran to their end', false, String(e && e.stack || e).slice(0, 300)); }
+    out.push(pass + ' passed, ' + fail + ' failed');
+    document.getElementById('out').textContent = out.join(String.fromCharCode(10));
+    // the ways: two choices that do not disturb each other. How it is painted: dots, stucco, flat.
+    // What it stands on: night, day. Each link keeps the other choice, and the wind.
+    var state = { solid: String(window.BELA_SOLID), day: Q.day ? '1' : '', riffle: Q.riffle === undefined ? '0.5' : String(Q.riffle) };
+    function address(k, v) {
+      var o = { solid: state.solid, day: state.day, riffle: state.riffle }, parts = []; o[k] = v;
+      if (o.solid !== '1') parts.push('solid=' + o.solid);
+      if (o.day) parts.push('day=1');
+      if (o.riffle !== '0.5') parts.push('riffle=' + o.riffle);
+      if (blowing) parts.push('wind=1');
+      return '?' + parts.join('&');
+    }
+    function dress() {
+      [].forEach.call(document.querySelectorAll('#ways a[data-k]'), function (a) {
+        var k = a.getAttribute('data-k'), v = a.getAttribute('data-v');
+        a.className = state[k] === v ? 'on' : ''; a.href = address(k, v);
+      });
+    }
+    // the wind: the sea's four slots turn, and its flag seems to wave. Nothing in the page moves.
+    var wind = document.getElementById('wind'), blowing = false;
+    function blow(on) { blowing = on; wind.textContent = on ? 'on' : 'off'; wind.className = on ? 'on' : '';
+      if (on) window.__belaCycle([6, 5, 3, 2], 150); else window.__belaCycle(); dress(); }
+    dress();
+    wind.onclick = function (e) { e.preventDefault(); blow(!blowing); };
+    if (Q.wind) blow(true);
+    // on a real screen not every picture is in view at once: chirp again when the page comes to rest
+    var st = null; addEventListener('scroll', function () { clearTimeout(st); st = setTimeout(function () {
+      try { window.__belaPaint(); if (blowing) window.__belaCycle([6, 5, 3, 2], 150); } catch (e) {} }, 200); }, true);
+  })();
+</script>
+<script src="yampal.js"></script>
+<script src="luma.js"></script>
+<script src="garden.js"></script>
+<script src="vine.js"></script>
+<script src="import.js"></script>
+<script src="paste.js"></script>
+</body></html>

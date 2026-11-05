@@ -188,7 +188,7 @@ t('the widget hung', typeof window.__myWidgetStop === 'function');
 t('plain prose is left alone', document.querySelector('p.plain').textContent === 'A line of plain prose.');
 ```
 
-**In Bela:** [the Beladrome](../try-him/) is exactly this. It runs its checks at load and prints them at the foot of the page. That's also why it doubles as the demo.
+**In Bela:** [the Beladrome](https://silberpunkt.github.io/vespers/try-him/) is exactly this. It runs its checks at load and prints them at the foot of the page. That's also why it doubles as the demo.
 
 ## 11. Hand it over
 

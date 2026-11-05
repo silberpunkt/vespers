@@ -4,7 +4,7 @@
 
 One paste, no install, no network. Reload the page and he's gone.
 
-**[Try him first, in your browser: the Beladrome →](try-him/)**
+**[Try him first, in your browser: the Beladrome →](https://silberpunkt.github.io/vespers/try-him/)**
 *(a stand-in chat page with Bela already hung; nothing to install, nothing sent anywhere)*
 
 ![Anatomy of a Vespers bat: a blueprint poster of Bela's fifteen parts](media/poster.jpg)

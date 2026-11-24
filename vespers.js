@@ -719,6 +719,53 @@
   var eatLabel = document.getElementById('bk-eat');
   document.getElementById('bk-x').onclick = function () { if (window.__blinkenStop) window.__blinkenStop(); box.remove(); };
 
+  // ================= OWN COLOURS (23 xi 2026)
+  // user1, in Windows High Contrast: "I need HC to correct type reproduction, eliminate detail and make window edges
+  // tangible. I need conventional Web color within the applications we build, to see what others see." High Contrast
+  // repaints every page in the system's few colours, Bela's paintings with it: a highlight takes its forced colours from
+  // the element it lies in, and cannot be told otherwise itself. One rule asks the page to keep its own colours:
+  // forced-color-adjust: none, on everything. The window's frame and the system's menus stay High Contrast.
+  // Bela offers it only while High Contrast is on: [hc] in his bar, lit gold while the page keeps its colours. On by
+  // default; a press is remembered (blinken-own); window.BELA_OWN = 0 or 1 before pasting overrides both. It goes
+  // when he goes. A frame inside the page is its own document and is not reached.
+  var OWN_ID = 'bk-own-colours', ownMq = null;
+  try { ownMq = window.matchMedia ? window.matchMedia('(forced-colors: active)') : null; } catch (eM) {}
+  function ownHC() { return !!(ownMq && ownMq.matches); }
+  function ownWanted() {
+    if (window.BELA_OWN !== undefined) return !!+window.BELA_OWN;
+    try { var s = localStorage.getItem('blinken-own'); if (s !== null) return s === '1'; } catch (e) {}
+    return true;
+  }
+  function ownMark() {
+    var b = document.getElementById('bk-own'); if (!b) return;
+    var on = !!document.getElementById(OWN_ID);
+    b.style.display = ownHC() || on ? '' : 'none';
+    b.style.color = on ? '#e0b050' : '#8f98a5'; b.style.borderColor = on ? '#e0b050' : '#1d2026';
+    b.title = on ? 'own colours: this page keeps its own colours under High Contrast (press to give them back)'
+                 : 'own colours: press to keep this page\'s own colours under High Contrast';
+  }
+  function ownSet(on) {
+    var st = document.getElementById(OWN_ID);
+    if (on && !st) { st = document.createElement('style'); st.id = OWN_ID; st.textContent = '*, *::before, *::after { forced-color-adjust: none !important }'; (document.head || document.documentElement).appendChild(st); }
+    if (!on && st) st.remove();
+    ownMark();
+  }
+  function ownMedia() { ownSet(ownHC() && ownWanted()); }
+  var ownBtn = document.createElement('span'); ownBtn.id = 'bk-own'; ownBtn.textContent = 'hc';
+  ownBtn.style.cssText = BTN + ';position:absolute;right:84px;bottom:9px;margin-left:0;white-space:pre;user-select:none;display:none';   // lower right, at the flap's left (user1, 23 xi)
+  box.appendChild(ownBtn);
+  ownBtn.addEventListener('pointerdown', function (e) { e.stopPropagation(); e.preventDefault(); });
+  document.getElementById('bk-own').onclick = function () {
+    var on = !document.getElementById(OWN_ID); ownSet(on);
+    try { localStorage.setItem('blinken-own', on ? '1' : '0'); } catch (e) {}
+  };
+  if (ownMq) { if (ownMq.addEventListener) ownMq.addEventListener('change', ownMedia); else if (ownMq.addListener) ownMq.addListener(ownMedia); }
+  function ownDown() {
+    if (ownMq) { if (ownMq.removeEventListener) ownMq.removeEventListener('change', ownMedia); else if (ownMq.removeListener) ownMq.removeListener(ownMedia); }
+    var st = document.getElementById(OWN_ID); if (st) st.remove();
+  }
+  ownMedia();
+
   var FEED = function(){ return document.querySelector('div[role="feed"]') || document.querySelector('[data-testid="transcript-list"]') || document.body; };
   var EATS = 'p, li, blockquote';        // both plates
   function leaves(root) {                // the eatable blocks, innermost only (an li holding a p is eaten as the p)
@@ -759,9 +806,13 @@
   };
 
   var scanWrap = document.getElementById('bk-scan'), scanLeds = [];
+  // THE GRIP (user1, 23 xi 2026): the four lights, 1 2 3 4, drawn as command stripes leaning like the epaulette's slashes, as wide as
+  // the lights were and 12 px tall. "Do not drag Bela by his nose. Drag him by the grippable 1,2,3,4 bars ... to take him gently
+  // at shoulder and say officer, this way please." They were always within the head, which drags; now they look the part.
+  scanWrap.style.alignItems = 'center'; scanWrap.style.cursor = 'grab'; scanWrap.title = 'take him by the shoulder: drag Bela here';
   for (var q = 0; q < 4; q++) {
     var l = document.createElement('span');
-    l.style.cssText = 'width:6px;height:6px;border-radius:50%;background:#12303f;transition:background .25s,box-shadow .25s';
+    l.style.cssText = 'width:6px;height:12px;border-radius:1px;transform:skewX(25deg);background:#12303f;transition:background .25s,box-shadow .25s';   // command stripes, \\\\, lit as the round lights were (user1, 23 xi)
     scanWrap.appendChild(l); scanLeds.push(l);
   }
   function setScan(n) {
@@ -774,7 +825,7 @@
 
   (function () {                                        // drag by the head
     var h = document.getElementById('bk-head'), dr=false, ox=0, oy=0;
-    h.addEventListener('pointerdown', function(e){ var id=e.target.id; if(id==='bk-x'||id==='bk-go'||id==='bk-bt'||id==='bk-sb'||id==='bk-vt'||id==='bk-tn'||id==='bk-tilt'||id==='bk-roll'||(e.target.closest&&e.target.closest('#bk-gauges')))return; dr=true; ox=e.clientX-box.offsetLeft; oy=e.clientY-box.offsetTop; h.setPointerCapture(e.pointerId); });
+    h.addEventListener('pointerdown', function(e){ var id=e.target.id; if(id==='bk-x'||id==='bk-go'||id==='bk-own'||id==='bk-bt'||id==='bk-sb'||id==='bk-vt'||id==='bk-tn'||id==='bk-tilt'||id==='bk-roll'||(e.target.closest&&e.target.closest('#bk-gauges')))return; dr=true; ox=e.clientX-box.offsetLeft; oy=e.clientY-box.offsetTop; h.setPointerCapture(e.pointerId); });
     h.addEventListener('pointermove', function(e){ if(!dr)return; box.style.left=(e.clientX-ox)+'px'; box.style.top=(e.clientY-oy)+'px'; box.style.right='auto'; box.style.bottom='auto'; placeBlue(); });
     h.addEventListener('pointerup', function(){ if(!dr)return; dr=false;
       try { localStorage.setItem('blinken-hung', JSON.stringify({left:box.offsetLeft, top:box.offsetTop})); } catch (e) {} });
@@ -4488,8 +4539,8 @@
   // [ *| ] THE FLAGS' OWN SWITCH (user1, 20 x: "let it be a toggle, and take up shop in lower-right: [ *| ] to show the most basic form: a coin on a pole")
   var flagBtn = document.createElement('span'); flagBtn.id = 'bk-flags'; flagBtn.textContent = '*|';
   flagBtn.title = 'the flags: beside every opener line of a raked paragraph, its relation and its two coins. a coin on a pole.';
-  flagBtn.style.cssText = 'position:absolute;right:106px;bottom:9px;cursor:pointer;color:rgba(255,255,255,0.92);font-size:12px;border:1px solid #1d2026;border-radius:6px;padding:0 7px;line-height:17px;white-space:pre;user-select:none';
-  box.appendChild(flagBtn);
+  flagBtn.style.cssText = BTN + ';color:rgba(255,255,255,0.92);white-space:pre;user-select:none';
+  (function () { var t = document.getElementById('bk-tilt'); if (t && t.parentNode) t.parentNode.insertBefore(flagBtn, t.nextSibling); else box.appendChild(flagBtn); })();   // at the right of |>, the Wallbreaker tilts they belong to (user1, 23 xi: the flags trade places with the rollers)
   flagBtn.addEventListener('pointerdown', function (e) { e.stopPropagation(); e.preventDefault(); });
   function flagsPaint() { flagBtn.style.color = tiltState.flags === 2 ? 'rgba(255,255,255,0.92)' : tiltState.flags === 1 ? 'rgba(255,255,255,0.55)' : '#8f98a5'; flagBtn.style.borderColor = '#1d2026'; }
   flagBtn.addEventListener('click', function (e) { e.stopPropagation(); tiltState.flags = (tiltState.flags + 2) % 3; flagsPaint(); saveTilts(); if (!tiltState.flags) flagsUnpadAll(); tiltView(); eatLabel.textContent = ['flags struck', 'flags at half-brite (Agnes)', 'flags raised, full'][tiltState.flags]; });   // full -> half -> off -> full (user1, 20 x: "Full, Agnes Halfbrite, and Off")
@@ -4634,8 +4685,9 @@
   var roll = { on: false, last: null, y: 0, raf: 0, userAt: 0, el: null };
   var rollBtn = document.createElement('span'); rollBtn.id = 'bk-roll'; rollBtn.textContent = '≈';
   rollBtn.title = 'rubber rollers: a streaming reply slides into view instead of jumping. the scroll is still the host\'s; only the picture is eased.';
-  rollBtn.style.cssText = BTN + ';padding:0 5px';
-  (function () { var t = document.getElementById('bk-tilt'); if (t && t.parentNode) t.parentNode.insertBefore(rollBtn, t.nextSibling); })();   // beside the tilts, in the head row
+  rollBtn.style.cssText = BTN + ';padding:0 5px;position:absolute;right:118px;bottom:9px;margin-left:0;white-space:pre;user-select:none';
+  box.appendChild(rollBtn);   // lower right, with the other system switches (user1, 23 xi: "also a system function and not an additional view")
+  rollBtn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function rollScroller() {
     var n = FEED(), cs;
     while (n && n !== document.body) { cs = getComputedStyle(n); if (/(auto|scroll)/.test(cs.overflowY) && n.scrollHeight > n.clientHeight + 2) return n; n = n.parentElement; }
@@ -5128,6 +5180,7 @@
   fit();
 
   window.__blinkenStop = function () {
+    try { ownDown(); } catch (eO) {}                                // own colours go when he goes
     try { document.documentElement.classList.remove('bk-asleep'); unlistenAll(); stopVoice(); gaugesStop(); glintStop(); tiltCloseAll(); galleryClose(); outputterClose(); if (provTip) provTip.remove(); playSet(false); wyrdUnpadAll(); flagsUnpadAll(); vidUnpadAll(); try { FEED().style.transform = ''; } catch (e0) {} if (tiltState.layer) tiltState.layer.remove(); if (ringSvg) { ringSvg.remove(); ringM.remove(); } if (ringSheet) ringSheet.remove(); unlamp(null); closeGear(); voiceRow.remove(); lampStyle.remove(); filterStyle.remove(); forgetLamp(); if (blueLamp) blueLamp.remove(); ta.style.color = BLUE.ink; lampNames.forEach(function (n) { CSS.highlights['delete'](n); }); } catch (e) {}   // the voice and the lamp go with him
     if (clockTimer) clearInterval(clockTimer); clearInterval(sweepTimer);
     if (raf) cancelAnimationFrame(raf); mo.disconnect();
@@ -5307,7 +5360,7 @@
   btn.style.cssText = 'position:absolute;right:50px;bottom:9px;cursor:pointer;color:#8f98a5;' +
     'font-size:12px;border:1px solid #1d2026;border-radius:6px;padding:0 7px;line-height:17px;' +
     'white-space:pre;user-select:none';
-  btn.innerHTML = '( <b id="bk-flap-v" style="font-weight:normal">v</b><b id="bk-flap-u" style="font-weight:normal">^</b> )';
+  btn.innerHTML = '<b id="bk-flap-v" style="font-weight:normal">v</b><b id="bk-flap-u" style="font-weight:normal">^</b>';   // v^ alone, the parens and spaces out (user1, 23 xi), to make room for hc
   box.appendChild(btn);
   // PUPATE [ () ] (user1, 19 x 2026: "Sometimes, to hassle myself with one or another Anthropic menu, I need Bela out of the way ...
   // Click and he hides behind a tile large enough to accommodate Flap and Pupate ... When he is En Pupa, the Pupate button
@@ -5346,6 +5399,7 @@
   pup.addEventListener('pointerdown', function (e) { e.stopPropagation(); e.preventDefault(); });
   pup.addEventListener('click', function (e) { e.stopPropagation(); pupate(!pupa.on); });
   var vEl = btn.querySelector('#bk-flap-v'), uEl = btn.querySelector('#bk-flap-u');
+  var rowsStop = null;                                 // set by the bar's rows, below
 
   function paint() {                                  // light the way he will go next
     var down = S.at === 'up';
@@ -5377,7 +5431,66 @@
   if (land) moveTo(land);
   save(); paint();
 
-  function stop() { btn.remove(); if (head) head.removeEventListener('pointerup', dragged); delete window.__flapStop; }
+  // ================= THE BAR'S ROWS (user1, 23 xi 2026) =================
+  // "In computer applications, the status bar is always at the very bottom, as if the last word." The status line (#bk-eat)
+  // goes to the foot of the box, one line that never wraps and so never moves a neighbour ("a skeuomorphic 1-dim deluxe car
+  // stereo"); a message too long for it is cut, with a brighter ellipsis where more lies, reached by a click or the wheel. The lower-right
+  // buttons rise into the row it left. And the three views ('-_|  |__|  #) trade places with tincture, tint and filter:
+  // the views join the voice row, and the third row holds the tone switches with the system's own: .: Tint Filter ≈ hc v^ ().
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var eat = $('bk-eat'), voice = $('bk-voice'); if (!eat || !voice) return;
+    // 1 the status line, the last word, with VESPERS at its left. Too long for the line: it is cut, and a brighter blue
+    // ellipsis stands where more is hidden. A click jumps to the far end (the ellipsis moves to the left), another back;
+    // the mouse wheel over it slides along. Nothing moves by itself (user1: scrolling "would pull the eye").
+    var bar = document.createElement('div'); bar.id = 'bk-status';
+    bar.style.cssText = 'display:flex;align-items:baseline;gap:10px;margin-top:0;font-size:10px;line-height:14px;color:#565b64';   // no margin above: the box's own padding is the room (user1, 23 xi)
+    var name = Array.prototype.filter.call(box.querySelectorAll('div'), function (d) { return d.textContent === 'VESPERS' && !d.children.length; })[0];
+    if (name) { name.style.marginTop = '0'; name.style.flex = 'none'; name.style.letterSpacing = '.11em'; name.textContent = '\\\\\\VESPERS'; bar.appendChild(name); }   // three back-slashes, sovereign command: the bat's one epaulette (user1, 23 xi)
+    if (name) {                                                                                     // the epaulette has authority: it leads home, after asking (user1, 23 xi)
+      name.style.cursor = 'pointer'; name.title = 'Vespers on GitHub';
+      name.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      name.addEventListener('click', function (e) { e.stopPropagation(); if (window.confirm('Open Vespers GitHub repo?')) window.open('https://github.com/silberpunkt/vespers', '_blank', 'noopener'); });
+    }
+    box.style.borderRadius = '6px'; box.style.padding = '6px 6px 8px 112px';                        // Bela himself, closer about his rows (user1, 23 xi)
+    var view = document.createElement('div'); view.id = 'bk-status-view';
+    view.style.cssText = 'position:relative;flex:1;min-width:0;overflow:hidden;white-space:nowrap;cursor:default';
+    bar.appendChild(view); box.appendChild(bar); view.appendChild(eat); eat.style.whiteSpace = 'nowrap'; eat.style.display = 'inline';
+    function dots(side) { var d = document.createElement('span'); d.textContent = '…'; d.title = 'more: click, or turn the wheel';
+      d.style.cssText = 'position:absolute;top:0;' + side + ':0;padding:0 3px;color:#7fd8f0;display:none;pointer-events:none'; view.appendChild(d); return d; }
+    var dotL = dots('left'), dotR = dots('right');
+    function fitEat() {                                   // which ends are hidden, and the ellipsis there, on the box's own ground
+      var max = view.scrollWidth - view.clientWidth, x = view.scrollLeft, bg = getComputedStyle(box).backgroundColor;
+      dotL.style.background = dotR.style.background = bg;
+      dotL.style.display = max > 1 && x > 1 ? '' : 'none'; dotR.style.display = max > 1 && x < max - 1 ? '' : 'none';
+      view.style.cursor = max > 1 ? 'pointer' : 'default';
+    }
+    view.addEventListener('click', function () { var max = view.scrollWidth - view.clientWidth; if (max <= 1) return; view.scrollLeft = view.scrollLeft < max - 1 ? max : 0; fitEat(); });
+    view.addEventListener('wheel', function (e) { var max = view.scrollWidth - view.clientWidth; if (max <= 1) return; e.preventDefault(); e.stopPropagation(); view.scrollLeft += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY); fitEat(); }, { passive: false });
+    var eatObs = new MutationObserver(function () { view.scrollLeft = 0; fitEat(); }); eatObs.observe(eat, { childList: true, characterData: true, subtree: true });
+    // 2 the views up into the voice row, where tincture, tint and filter stood
+    var tn = $('bk-tn'), lamp = $('bk-lamp'), lampG = $('bk-lamp-gear'), filt = $('bk-filter'), filtG = $('bk-filter-gear');
+    var gapL = lamp && lamp.previousElementSibling, gapF = filt && filt.previousElementSibling;    // the little spaces before tint and filter go with them
+    [$('bk-pwyrd'), $('bk-vid'), $('bk-auto')].forEach(function (b) {
+      if (!b) return; b.style.position = 'static'; b.style.right = ''; b.style.bottom = ''; b.style.marginLeft = '3px'; voice.insertBefore(b, tn || null);
+    });
+    // 3 the third row: the tone switches and the system's own, right of the meter, left of the flap
+    var row = document.createElement('span'); row.id = 'bk-row3';
+    row.style.cssText = 'position:absolute;right:84px;display:flex;align-items:center';
+    box.appendChild(row);
+    [tn, gapL, lamp, lampG, gapF, filt, filtG].forEach(function (e) { if (e && e.parentNode) row.appendChild(e); });
+    [$('bk-roll'), $('bk-own')].forEach(function (b) {
+      if (!b) return; b.style.position = 'static'; b.style.right = ''; b.style.bottom = ''; b.style.marginLeft = '6px'; row.appendChild(b);
+    });
+    function place() {                                  // the third row at the spacing of the first two (user1: "scooch upward")
+      var hd = $('bk-head'), top = voice.offsetTop + (voice.offsetTop - (hd ? hd.offsetTop : 0)) + 4, h = btn.offsetHeight || 19;   // and 4 px more, clear of the voice row's taller buttons (user1, 23 xi)
+      var B = box.clientHeight - top - h; row.style.bottom = B + 'px'; if (!pupa.on) { btn.style.bottom = B + 'px'; pup.style.bottom = B + 'px'; }
+    }
+    place(); fitEat(); window.addEventListener('resize', fitEat);
+    rowsStop = function () { eatObs.disconnect(); window.removeEventListener('resize', fitEat); };
+  })();
+
+  function stop() { btn.remove(); if (head) head.removeEventListener('pointerup', dragged); delete window.__flapStop; if (rowsStop) rowsStop(); }
   window.__flapStop = stop;
   var bela = window.__blinkenStop;                    // Bela's ✕ takes the flap down with him
   if (bela && !bela._flap) {

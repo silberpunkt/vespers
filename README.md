@@ -4,8 +4,7 @@
 
 One paste, no install, no network. Reload the page and he's gone.
 
-**[Try him first, in your browser: the Beladrome →](https://silberpunkt.github.io/vespers/try-him/)**
-*(a stand-in chat page with Bela already hung; nothing to install, nothing sent anywhere)*
+**[Try him first, in your browser: the Beladrome →](https://silberpunkt.github.io/vespers/try-him/)** *(a stand-in chat page with Bela already hung; nothing to install, nothing sent anywhere)*
 
 ![Anatomy of a Vespers bat: a blueprint poster of Bela's fifteen parts](media/poster.jpg)
 
@@ -33,6 +32,10 @@ So he has no version requirement, no install step, and nothing that runs with yo
 
 ![A model's status board, painted in colour by Bela](media/colour-in-the-chat.png)
 
+[![SPACE INFLATORS: a picture written in plain text, painted where it stands. Click to open the painted-chat window.](media/space-inflators.png)](https://silberpunkt.github.io/vespers/painted-chat/)
+
+**[Read the grammar in its own window, every picture painted where it stands →](https://silberpunkt.github.io/vespers/painted-chat/)**
+
 **4. The Wyrd.** Above each tilted paragraph, a small path board: the route every sentence takes down and back up the ladder of its clauses, drawn in box characters. It's an honest picture of how a thought travels. *Could be wolves, could be alehouse.*
 
 ![Wyrd diagrams above their paragraphs](media/the-wyrd.png)
@@ -45,7 +48,14 @@ So he has no version requirement, no install step, and nothing that runs with yo
 - **Filter.** Take hold of how the page looks: font, palette, contrast.
 - **Vidoutes.** A little film drawn from the words of any paragraph, kept in a gallery and saveable as a GIF. Try *"Fourscore and seven years ago."*
 - **The bluebox** (his own typing window, which sends through the app's composer) and **the screwbox** (a writing pane after the old MIT Visible Language Workshop).
-- **His face and instruments.** Counter-rotating eyes that turn while Claude works, a twin VU that digests one paragraph per meal, four scan lights (seen, found, decoded, applied: *au fait*), the Glint and four gauges: Lag, Heap, Nodes, Ranges.
+- **His face and instruments.** Counter-rotating eyes that turn while Claude works, a twin VU that digests one paragraph per meal, the Glint and four gauges: Lag, Heap, Nodes, Ranges. Four command stripes at his top right light as he reads (seen, found, decoded, applied: *au fait*), and they are his grip: take him by them, at the shoulder, to move him.
+- **His status line**, at his foot, says what he is doing in one line that never wraps. When a message is longer than the line, a blue … shows where more is waiting: click the line, or turn the mouse wheel over it.
+
+### His faceplate, and your own colours
+
+- **Day and Night** (`Bb`, the bartok-bela button, in honour of Bartók Béla). Choose any faceplate colour and he decides the time of day from it: light ink on a dark plate, dark ink on a light one. Press `Bb` to have it the other way. His controls are drawn in that ink, bright when on and faded when off; his screens are smoked glass over the plate. The gear beside `Bb` holds the plate (by picker, by hex, or by a word: Pear, Snow, Noct) and the tristripe, three faint bands across his right side that give the eye a map.
+- **Windows High Contrast** (`hc`). High Contrast repaints every page in a few system colours, his paintings too. While it is on, `hc` keeps the page's own colours, so you can have High Contrast everywhere else and conventional colour here. It appears only when High Contrast is on.
+- **The rose** (`@`). Your own stylesheet for the page, on and off with one click. Its gear opens the sheet itself, with `save` and `load` to keep it in a file of your own. Until you write one, it begins as Claude Clarion, a usability sheet for the app.
 
 The poster above maps all fifteen of his parts. The [field guide](media/vespers-brochure.pdf) walks through them, presented by Kurt Volfgang and his stoat Geist, both imaginary.
 
@@ -60,24 +70,29 @@ He's been used in the Claude desktop app, in Chat and in Code sessions. The clau
 1. Open a chat, or a Code session, in the Claude desktop app.
 2. Open the developer tools. They have to be enabled in Claude's settings first. Then press **Ctrl+Alt+I**, or right-click and choose **Inspect**. In a chat you can right-click anywhere; in a Code session, right-click the narrow gutter at the left edge of the window. Pick the **Console** tab.
 3. Paste the whole of [`vespers.js`](vespers.js) and press Enter. The first time, the console may ask you to type `allow pasting` before it accepts a paste. That warning exists for good reason: only paste code you've read or trust.
-4. He hangs under your composer. Press **( )** and he chirps, which means he paints what's on the page.
+4. He hangs under your composer. Press **( )** and he chirps, which means he paints what's on the page. Move him by his grip, the four stripes at his top right.
 
 **To take him down:** type `__blinkenStop()` in the same console, or just reload the page.
 
 ## How he works
 
-- **He reads the page; he doesn't change what it says.** Colour goes on through CSS highlights, which sit over the text and never touch it. A few things he adds are his own elements (his bar, the bluebox, the films), and he takes them away when stopped. The one exception is a long painted shadow: to close up its line spacing he wraps that run of text in one span, and he unwraps it again when he's done.
+- **He reads the page; he doesn't change what it says.** Colour goes on through CSS highlights, which sit over the text and never touch it. A few things he adds are his own elements (his bar, the bluebox, the films), and he takes them away when stopped. The one exception is a long painted shadow: to close up its line spacing he wraps that run of text in one span, and he unwraps it again when he's done. Two switches add a stylesheet to the page while they are on: `hc`, one rule that keeps the page's colours under High Contrast, and the rose, which is yours.
+- **Keys and names.** Every control takes focus with Tab, answers Enter and Space, and has a name a screen reader can say. Bela is mostly for the eyes, but nothing in him needs a mouse.
 - **No network.** There are no `fetch`, XHR, WebSocket or beacon calls in the file. Your words stay in the page.
-- **What he keeps.** A few settings in the page's `localStorage`, under keys that start with `blinken-`: where he's hung, his tints and gauges, and your unsent bluebox and screwbox drafts. Clear them in DevTools under Application → Local Storage if you'd like a clean slate.
+- **What he keeps.** A few settings in the page's `localStorage`, under keys that start with `blinken-`: where he's hung, his tints and gauges, his faceplate, ink and tristripe, your rose's sheet, and your unsent bluebox and screwbox drafts. Clear them in DevTools under Application → Local Storage if you'd like a clean slate. An app may clear its storage on its own, so keep your rose's sheet in a file with its `save`.
+- **His name leads home.** `\\\VESPERS`, at his foot, asks before it opens this repository.
 - **What he acts on.** He sends a message only when you press Enter in his bluebox, and then through the app's own Send button. **copy yowl** writes to your clipboard when you press it.
 - **What ties him to the app.** He finds the page by a short list of names in it: the test ids `chat-input`, `chat-input-send`, `code-prompt-input`, `code-prompt-send`, `transcript-list` and `user-message`, and the list of blocks he paints (`PAINTS`, near line 1729). If the app is redrawn and Bela stops finding things, that is where to look. `__belaWhy()` in the console tells you, block by block, what he saw and why.
 
 ## Build your own
 
-He's one file, so you can read him. The habits that make a widget like this safe to paste, and how to grow one of your own, are in **[docs/building-a-console-widget.md](docs/building-a-console-widget.md)**.
+He's one file, so you can read him: 681,181 bytes, under half a 1.44 MB floppy, and 231,100 packed with gzip.
+
+![Bela, by weight: his parts against one 1.44 MB floppy, as his console card prints them](media/bela-by-weight.png)
+
+The habits that make a widget like this safe to paste, and how to grow one of your own, are in **[docs/building-a-console-widget.md](docs/building-a-console-widget.md)**.
 
 - [docs/painted-chat.md](docs/painted-chat.md): how to write shadowgram (colorburst) art by hand or by program
-- [docs/painted-internals.md](docs/painted-internals.md): how the painter works inside
 - [docs/bell/](docs/bell/): Visible Speech in threes, with the plates
 - [media/poster-print.svg](media/poster-print.svg): the anatomy poster, on white, for printing
 

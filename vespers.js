@@ -631,7 +631,7 @@
   var SHOW_CLOCK = false;  // true brings the pocketwatch back
   // --- the bluebox ---
   var BLUE = {
-    gap:   8,                               // px above his mighty flat head
+    gap:   1,                               // px above his mighty flat head: one, so nothing shows through the gap (user1, 24 xi: "Mind the gap! by making it evident but not dangerous"); it was 8
     width: 0,                               // 0 = match the page's composer
     bg:    'rgba(22,20,64,.24)',            // night indigo, 24% -- dark mode without the R and G
     ink:   'rgba(255,255,255,.96)',         // 96% white
@@ -640,7 +640,8 @@
     font:  '',                              // '' = copy the composer; e.g. "11px/11px Iosevka"
     show:  true,
     headroom: 4,                            // px between the blue line and the text (User1's patch)
-    measure: '550px',                       // the text column's width, centred in the glass (User1's patch). '' = use cols
+    level: 4,                               // px lower the typeline enters, to sit level with the app's own composer (user1, 24 xi, measured in fuchsia): added above the text, taken from below it, so the box keeps its height
+    measure: '594px',                       // the text column's width, centred in the glass (User1's patch; 594 px from 24 xi). '' = use cols
     cols:  70                               // if no measure: characters per line before it wraps. 0 = fill the box
   };
   // =========================================
@@ -740,7 +741,7 @@
     var b = document.getElementById('bk-own'); if (!b) return;
     var on = !!document.getElementById(OWN_ID);
     b.style.display = ownHC() || on ? '' : 'none';
-    b.style.color = on ? '#e0b050' : '#8f98a5'; b.style.borderColor = on ? '#e0b050' : '#1d2026';
+    b.style.color = on ? '#cfcbc2' : '#8f98a5'; b.style.borderColor = '#1d2026';   // bright when on, as the other buttons are (user1, 24 xi: no amber)
     b.title = on ? 'own colours: this page keeps its own colours under High Contrast (press to give them back)'
                  : 'own colours: press to keep this page\'s own colours under High Contrast';
   }
@@ -1025,7 +1026,7 @@
     'position:fixed','z-index:2147482999','box-sizing:border-box',
     'background:' + BLUE.bg, 'border-top:' + BLUE.line,
     BLUE.glass ? 'backdrop-filter:' + BLUE.glass + ';-webkit-backdrop-filter:' + BLUE.glass : '',
-    'padding:' + BLUE.headroom + 'px 0 0'
+    'padding:' + (BLUE.headroom + BLUE.level) + 'px 0 0', 'min-height:2.5em'   // never thinner than two and a half lines of the page's type (user1, 24 xi)
   ].join(';');
   var ta = document.createElement('textarea');
   ta.id = 'bk-blue-ta'; ta.rows = 1; ta.spellcheck = true;
@@ -1071,6 +1072,7 @@
   // height holds, propped up or mooshed down, over anything typed, and is relieved on send and when the box is hidden.
   var shade = 0;
   function fit() {                                      // grows line by line, like the real one, to the same ceiling -- unless the shade is set
+    var tcs = getComputedStyle(ta); blue.style.paddingBottom = Math.max(0, Math.round(0.75 * (parseFloat(tcs.fontSize) || 14) - (parseFloat(tcs.paddingBottom) || 0) - BLUE.level)) + 'px';   // room under the last line: most of a g's height, as the app's own box leaves (user1, 24 xi: the descender sat one slim pixel over his head)
     if (shade) { ta.style.height = shade + 'px'; placeBlue(); return; }
     ta.style.height = 'auto';
     ta.style.height = Math.min(ta.scrollHeight, maxH) + 'px';
@@ -2822,7 +2824,7 @@
     ['bk-tilts', 'bk-ring-sheet', 'bk-pad-style', 'bk-pupa-style'].forEach(function (id) { var el = document.getElementById(id); if (el) el.remove(); });
   })();
   function voiceOk() { return typeof window.ECOUTER === 'object' && !!window.ECOUTER && typeof window.ECOUTER.tint === 'function'; }   // asked when needed: the library at the foot runs after this IIFE
-  var voiceState = { tint: false, mode: 'vivificat', room: 'none', glow: 1, vivid: 0.6, machine: false, sex: 'female', rate: 1, beeps: false,
+  var voiceState = { tint: false, mode: 'vivificat', room: 'none', glow: 1, vivid: 0.6, machine: false, sex: 'female', rate: 1, beeps: false, cast: '', volume: 0.8, songs: {},   // cast: one of Ecouter's eight voices, or '' for the house voice; volume, Ecouter's and the machine's alike; songs: each voice's own Song, where one was set
     filter: { on: false, op: 1, hue: 0, sat: 1, con: 1, bri: 1, rad: 0 },
     voice: { gust: true, stocking: true, entone: true, ess: true, govern: true, mellow: true, conduction: true, fgl: true } };
   try { var vs0 = JSON.parse(localStorage.getItem('blinken-voice') || 'null'); if (vs0) { var vk; for (vk in vs0) if (vk !== 'voice' && vk !== 'filter') voiceState[vk] = vs0[vk]; if (vs0.voice) for (vk in vs0.voice) voiceState.voice[vk] = !!vs0.voice[vk]; if (vs0.filter) for (vk in vs0.filter) voiceState.filter[vk] = vs0.filter[vk]; } } catch (e) {}
@@ -3107,7 +3109,7 @@
   if (voiceState.tint) setTimeout(function () { lampView(); blueTint(); }, 0);
 
   // ---- the voice: the selection, or the bluebox, read aloud a sentence at a time, with a head on the word ----
-  var vctx = null, vPlaying = null, vRun = 0, vHead = null, vHeadRange = null;
+  var vctx = null, vPlaying = null, vRun = 0, vHead = null, vHeadRange = null, vGain = null;
   function houseVoice() {                               // the house voice (gust, 79% ruler, and the rest), with Bela's toggles laid over it
     var C = ECOUTER.CHAIN, v = C.settings(C.PRESETS[C.HOUSE_NAME]), k;   // user1 heard the toggles alone as "much rougher": that was the living voice without its ruler
     for (k in voiceState.voice) v[k] = !!voiceState.voice[k];
@@ -3146,7 +3148,7 @@
   function speakMachine(text, chars) {
     if (!window.speechSynthesis || typeof SpeechSynthesisUtterance !== 'function') { eatLabel.textContent = 'no machine voice on this page'; return; }
     var u = new SpeechSynthesisUtterance(text), v = machineVoice(), hl = headFor();
-    if (v) u.voice = v; u.rate = voiceState.rate;
+    if (v) u.voice = v; u.rate = voiceState.rate; u.volume = Math.max(0, Math.min(1, voiceState.volume));
     u.onboundary = function (e) {                       // the head, on the machine's own word boundaries
       if (!chars || !hl || e.name !== 'word') return;
       var a = e.charIndex, b = a; while (b < text.length && text.charAt(b) !== ' ' && text.charAt(b) !== String.fromCharCode(10)) b++;
@@ -3182,12 +3184,30 @@
     for (i = 0; i < bits.length; i++) { if (!bits[i]) continue; cur.push(bits[i]); if (bits[i] === '.' || bits[i] === '?' || bits[i] === '!') { parts.push(cur.join(' ')); cur = []; } }
     if (cur.length) parts.push(cur.join(' '));
     var timed, made = [], next = 0, t0 = 0, lead = 0.333;
+    // THE CAST (user1, 24 xi 2026: "Could we have choices in the Play-Gear ... for Ecouter voices"): with a voice chosen, each
+    // sentence is read, cast in that voice and said, as Ecouter's own page does it (its score ring, folded in after the engine);
+    // and the reading head follows that voice word by word, from the score's own account of when each word is said.
+    var SC = ECOUTER.SCORE, cast = voiceState.cast && SC && SC.VOICES && SC.VOICES.names.indexOf(voiceState.cast) >= 0 ? voiceState.cast : '';
+    var tl = [], curPart = 0, partT0 = 0, WR = [], offs = [], wm, wre = /[A-Za-z0-9][A-Za-z0-9'\u2019-]*/g, totW = 0;
+    if (cast) {
+      while ((wm = wre.exec(text))) WR.push([wm.index, wm.index + wm[0].length]);
+      parts.forEach(function (p) { offs.push(totW); totW += p.split(' ').filter(function (t) { return t && !/^[.,;:!?]$/.test(t); }).length; });
+    }
     try { timed = ECOUTER.tint(text, { mode: 'none' }); } catch (err) { timed = []; if (typeof console !== 'undefined') console.warn('bela: no word-head for this reading (' + err.message + ')'); }   // the head is a courtesy; the voice goes on without it
     playBtn.innerHTML = '■ Stop'; lit(playBtn, true); eatLabel.textContent = 'saying ' + parts.length + (parts.length === 1 ? ' sentence' : ' sentences') + unreadNote;
     vctx = vctx || new (window.AudioContext || window.webkitAudioContext)();
     function headLoop() {
       if (run !== vRun || !vPlaying || !chars) return;
       var ms = (vctx.currentTime - t0) * 1000, k, a, b, hl = headFor();
+      if (cast && hl && tl[curPart] && WR.length === totW) {             // the cast's own head: the word the voice is saying now
+        var T = tl[curPart], pm = (vctx.currentTime - partT0) * 1000, lo = 0, hi = T.cum.length - 1, mid;
+        if (pm >= 0 && pm < T.cum[hi]) {
+          while (lo < hi) { mid = (lo + hi) >> 1; if (T.cum[mid] <= pm) lo = mid + 1; else hi = mid; }
+          var gw = T.w[lo] >= 0 ? offs[curPart] + T.w[lo] : -1, R = WR[gw];
+          if (R && chars[R[0]] && chars[R[1] - 1]) { hl.clear(); var rc = document.createRange(); rc.setStart(chars[R[0]][0], chars[R[0]][1]); rc.setEnd(chars[R[1] - 1][0], chars[R[1] - 1][1] + 1); hl.add(rc); }
+        }
+        requestAnimationFrame(headLoop); return;
+      }
       for (k = 0; k < timed.length; k++) if (timed[k].voice > 0 && timed[k].from <= ms && ms < timed[k].to) break;
       if (k < timed.length && hl) {
         for (a = k; a > 0 && text.charAt(a - 1) !== ' ' && text.charAt(a - 1) !== '\n'; a--) {}
@@ -3199,13 +3219,19 @@
     function playPart(n) {
       var x = made[n]; if (n === 0) x = ECOUTER.lead(x, lead);
       var buf = vctx.createBuffer(1, x.length, ECOUTER.SR); buf.getChannelData(0).set(x);
-      var src = vctx.createBufferSource(); src.buffer = buf; src.connect(vctx.destination);
+      var src = vctx.createBufferSource(), vg = vctx.createGain(); vg.gain.value = Math.max(0, Math.min(1.5, voiceState.volume)); src.buffer = buf; src.connect(vg); vg.connect(vctx.destination); vGain = vg;   // VOLUME (user1, 24 xi)
       src.onended = function () { if (vPlaying !== src || run !== vRun) return; vPlaying = null; next = n + 1; if (made[next]) playPart(next); else if (next >= parts.length) { stopVoice(); eatLabel.textContent = 'said' + unreadNote; } };
-      vPlaying = src; if (n === 0) { t0 = vctx.currentTime + lead; } src.start(); if (n === 0) requestAnimationFrame(headLoop);
+      vPlaying = src; if (n === 0) { t0 = vctx.currentTime + lead; } curPart = n; partT0 = n === 0 ? t0 : vctx.currentTime; src.start(); if (n === 0) requestAnimationFrame(headLoop);
     }
     function cook(n) {
       if (run !== vRun || n >= parts.length) return;
-      made[n] = ECOUTER.say(null, { voice: houseVoice(), codes: parts[n] });
+      if (cast) {                                       // read, cast in the chosen voice, said; and the score's account kept for the head
+        var sg = voiceState.songs && voiceState.songs[cast], rd = SC.fromCodes(parts[n], { tune: voiceState.voice.conduction === false ? 'apology' : 'conduction' }), sc = SC.as(rd, cast, sg === undefined ? {} : { song: sg });   // the voice's own Song, or the one set for it
+        made[n] = SC.say(sc, { voice: houseVoice() });
+        var nf = sc.frames.length, cum = new Float32Array(nf), wv = new Int16Array(nf), acc = 0, q;
+        for (q = 0; q < nf; q++) { acc += sc.frames[q].ms; cum[q] = acc; wv[q] = sc.word[sc.frames[q].ci] === undefined ? -1 : sc.word[sc.frames[q].ci]; }
+        tl[n] = { cum: cum, w: wv };
+      } else made[n] = ECOUTER.say(null, { voice: houseVoice(), codes: parts[n] });
       if (n === next && !vPlaying) playPart(n);
       setTimeout(function () { cook(n + 1); }, 0);     // the page breathes between sentences
     }
@@ -3246,10 +3272,42 @@
       var rm = row(d, 'WHO SPEAKS'), who = [], ec = chip('Ecouter', !voiceState.machine, 'the voice above: the throat, the chain, the house'), mc = chip('Machine', voiceState.machine, 'the page\'s own text to speech, as the browser has it');
       who = [[false, ec], [true, mc]];
       who.forEach(function (w) { w[1].onclick = function () { voiceState.machine = w[0]; who.forEach(function (x) { lit(x[1], x[0] === voiceState.machine); }); saveVoice(); }; rm.appendChild(w[1]); });
+      var SCv = ECOUTER.SCORE && ECOUTER.SCORE.VOICES;
+      if (SCv) {                                          // Ecouter's cast, the women first (user1, 24 xi); none lit is the house voice
+        var castChips = [], ORDERV = ['phillippe', 'blando', 'arthur', 'obelus', 'rudolf', 'nuage', 'lauren', 'miria'];
+        [['Women', 'ECOUTER: THE WOMEN'], ['Men', 'ECOUTER: THE MEN']].forEach(function (kin) {
+          var rv = row(d, kin[1]);
+          ORDERV.filter(function (n) { return SCv.names.indexOf(n) >= 0 && SCv.get(n).kin === kin[0]; }).forEach(function (n) {
+            var c = chip(n.charAt(0).toUpperCase() + n.slice(1), voiceState.cast === n, SCv.get(n).says + ' (press again for the house voice)');
+            castChips.push([n, c]);
+            c.onclick = function () { voiceState.cast = voiceState.cast === n ? '' : n; castChips.forEach(function (x) { lit(x[1], x[0] === voiceState.cast); }); saveVoice(); eatLabel.textContent = voiceState.cast ? 'the voice: ' + voiceState.cast : 'the voice: the house'; };
+            rv.appendChild(c);
+          });
+        });
+      }
+      // VOLUME, for Ecouter and the machine alike, and SONG, each voice's own (user1, 24 xi 2026: "by default, they all oversing
+      // but Blando, who is quite correct. Each voice must remember and restore its setting"). Sliders are 180 px, the Rate's doubled.
+      function slider(label, min, max, step, val, fmt, set) {
+        var r = row(d, label), inp = document.createElement('input'), out = document.createElement('span');
+        inp.type = 'range'; inp.min = min; inp.max = max; inp.step = step; inp.value = val; inp.style.cssText = 'width:180px;vertical-align:middle';
+        out.style.cssText = 'margin-left:8px;color:#cfcbc2'; out.textContent = fmt(+val);
+        inp.oninput = function () { set(+inp.value); out.textContent = fmt(+inp.value); saveVoice(); };
+        r.appendChild(inp); r.appendChild(out); return { input: inp, out: out };
+      }
+      slider('VOLUME', 0, 1.5, 0.05, voiceState.volume, function (v) { return Math.round(v * 100) + '%'; }, function (v) { voiceState.volume = v; if (vGain) vGain.gain.value = v; });
+      var songOf = function () { var n = voiceState.cast; if (!n || !SCv) return null; var sg = voiceState.songs && voiceState.songs[n]; return sg === undefined ? SCv.get(n).song : sg; };
+      var songS = slider('SONG', 0, 1, 0.01, songOf() === null ? 0.34 : songOf(), function (v) { return voiceState.cast ? v.toFixed(2) + ' (' + voiceState.cast + ')' : 'choose a voice above'; }, function (v) {
+        if (!voiceState.cast) return; voiceState.songs = voiceState.songs || {}; voiceState.songs[voiceState.cast] = v; });
+      var songBack = document.createElement('span'); songBack.textContent = 'its own'; songBack.title = 'the voice\'s own Song again';
+      songBack.style.cssText = VBTN + ';margin-left:8px'; songBack.onclick = function () { if (!voiceState.cast || !voiceState.songs) return; delete voiceState.songs[voiceState.cast]; saveVoice(); songSay(); };
+      songS.out.parentNode.appendChild(songBack);
+      function songSay() { var v = songOf(); songS.input.disabled = v === null; songS.input.value = v === null ? 0.34 : v; songS.out.textContent = v === null ? 'choose a voice above' : v.toFixed(2) + ' (' + voiceState.cast + ')'; }
+      songSay();
+      if (typeof castChips !== 'undefined') castChips.forEach(function (x) { var was = x[1].onclick; x[1].onclick = function () { was(); songSay(); }; });   // choosing a voice brings its own Song to the slider
       var rs = row(d, 'THE MACHINE'), sexes = [['female', 'Female'], ['male', 'Male']], sx = [];
       sexes.forEach(function (m) { var c = chip(m[1], voiceState.sex === m[0]); sx.push([m[0], c]); c.onclick = function () { voiceState.sex = m[0]; sx.forEach(function (x) { lit(x[1], x[0] === voiceState.sex); }); saveVoice(); }; rs.appendChild(c); });
       var rl = document.createElement('label'); rl.style.cssText = 'margin-left:8px;color:#565b64'; rl.textContent = 'Rate ';
-      var rt = document.createElement('input'); rt.type = 'range'; rt.min = 0.5; rt.max = 2; rt.step = 0.1; rt.value = voiceState.rate; rt.style.cssText = 'width:90px;vertical-align:middle';
+      var rt = document.createElement('input'); rt.type = 'range'; rt.min = 0.5; rt.max = 2; rt.step = 0.1; rt.value = voiceState.rate; rt.style.cssText = 'width:180px;vertical-align:middle';
       rt.oninput = function () { voiceState.rate = +rt.value; saveVoice(); }; rl.appendChild(rt); rs.appendChild(rl);
       var r2 = row(d, 'KEEP'), sv = chip('Save .wav', false, 'what Play would say, as a file, for ears and for subtraction');
       sv.onclick = function () {
@@ -5180,8 +5238,8 @@
   fit();
 
   window.__blinkenStop = function () {
-    try { ownDown(); } catch (eO) {}                                // own colours go when he goes
     try { document.documentElement.classList.remove('bk-asleep'); unlistenAll(); stopVoice(); gaugesStop(); glintStop(); tiltCloseAll(); galleryClose(); outputterClose(); if (provTip) provTip.remove(); playSet(false); wyrdUnpadAll(); flagsUnpadAll(); vidUnpadAll(); try { FEED().style.transform = ''; } catch (e0) {} if (tiltState.layer) tiltState.layer.remove(); if (ringSvg) { ringSvg.remove(); ringM.remove(); } if (ringSheet) ringSheet.remove(); unlamp(null); closeGear(); voiceRow.remove(); lampStyle.remove(); filterStyle.remove(); forgetLamp(); if (blueLamp) blueLamp.remove(); ta.style.color = BLUE.ink; lampNames.forEach(function (n) { CSS.highlights['delete'](n); }); } catch (e) {}   // the voice and the lamp go with him
+    try { ownDown(); } catch (eO) {}                                // own colours go when he goes
     if (clockTimer) clearInterval(clockTimer); clearInterval(sweepTimer);
     if (raf) cancelAnimationFrame(raf); mo.disconnect();
     window.removeEventListener('resize', onResize);
@@ -5387,7 +5445,7 @@
     } else {
       (pupa.kept || []).forEach(function (k) { k[0].style.display = k[1]; }); pupa.kept = null;
       var s = pupa.style || {}; box.style.width = s.width || ''; box.style.height = s.height || ''; box.style.padding = s.padding || ''; box.style.paddingLeft = s.paddingLeft || '';
-      btn.style.right = s.flapRight || '50px'; btn.style.bottom = s.flapBottom || '9px'; pup.style.bottom = s.pupBottom || '9px';
+      btn.style.right = s.flapRight || '50px'; btn.style.bottom = s.flapBottom || '34px'; pup.style.bottom = s.pupBottom || '34px';
       var old = document.getElementById('bk-pupa-style'); if (old) old.remove();
       pup.textContent = '()'; pup.title = 'pupate: Bela behind a tile, out of the way';
     }
@@ -5452,7 +5510,7 @@
       name.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
       name.addEventListener('click', function (e) { e.stopPropagation(); if (window.confirm('Open Vespers GitHub repo?')) window.open('https://github.com/silberpunkt/vespers', '_blank', 'noopener'); });
     }
-    box.style.borderRadius = '6px'; box.style.padding = '6px 6px 8px 112px';                        // Bela himself, closer about his rows (user1, 23 xi)
+    box.style.borderRadius = '6px'; box.style.padding = '6px 6px 4px 112px';   // 4 at the base (user1, 24 xi; it was 8)                        // Bela himself, closer about his rows (user1, 23 xi)
     var view = document.createElement('div'); view.id = 'bk-status-view';
     view.style.cssText = 'position:relative;flex:1;min-width:0;overflow:hidden;white-space:nowrap;cursor:default';
     bar.appendChild(view); box.appendChild(bar); view.appendChild(eat); eat.style.whiteSpace = 'nowrap'; eat.style.display = 'inline';
@@ -5474,6 +5532,11 @@
     [$('bk-pwyrd'), $('bk-vid'), $('bk-auto')].forEach(function (b) {
       if (!b) return; b.style.position = 'static'; b.style.right = ''; b.style.bottom = ''; b.style.marginLeft = '3px'; voice.insertBefore(b, tn || null);
     });
+    // 2b the ventilator serves the bluebox: it stands between the bluebox [▭] and Muriel's screw [\\], the three close, not touching (user1, 23 xi)
+    var vt = $('bk-vt'), bt = $('bk-bt'), sb = $('bk-sb');
+    if (vt && bt && bt.parentNode) { bt.parentNode.insertBefore(vt, bt.nextSibling); vt.style.marginLeft = '-5px'; if (sb) sb.style.marginLeft = '-5px'; }
+    var fl = $('bk-flags'); if (fl) fl.style.marginLeft = '-5px';                  // the flags close to the tilts they belong to (user1, 24 xi: "too far separated")
+    ['bk-seed', 'bk-led', 'bk-seed2'].forEach(function (id) { var e = $(id); if (e) e.style.flex = 'none'; });   // his eyes and nose keep their shape when the head is full: a crowded row had squeezed the round nose into a beak ("you are not an OWL")
     // 3 the third row: the tone switches and the system's own, right of the meter, left of the flap
     var row = document.createElement('span'); row.id = 'bk-row3';
     row.style.cssText = 'position:absolute;right:84px;display:flex;align-items:center';
@@ -5484,10 +5547,232 @@
     });
     function place() {                                  // the third row at the spacing of the first two (user1: "scooch upward")
       var hd = $('bk-head'), top = voice.offsetTop + (voice.offsetTop - (hd ? hd.offsetTop : 0)) + 4, h = btn.offsetHeight || 19;   // and 4 px more, clear of the voice row's taller buttons (user1, 23 xi)
-      var B = box.clientHeight - top - h; row.style.bottom = B + 'px'; if (!pupa.on) { btn.style.bottom = B + 'px'; pup.style.bottom = B + 'px'; }
+      var B = 34; row.style.bottom = B + 'px'; if (!pupa.on) { btn.style.bottom = B + 'px'; pup.style.bottom = B + 'px'; }   // 38 px was user1's measure (24 xi); with 4 px less padding at his base it is 34, so the row stays where he put it: the flap and pupate stand in it, and room is left below it
     }
     place(); fitEat(); window.addEventListener('resize', fitEat);
-    rowsStop = function () { eatObs.disconnect(); window.removeEventListener('resize', fitEat); };
+
+    // 4 [ Bb ], THE BARTOK-BELA BUTTON, AND BELA'S INK (user1, 23 xi 2026). "Faceplate color comes first. That determines time of
+    // day." A dark plate is Night, a light one Day; [ Bb ] has one function, to set Bela himself to Night or Day whatever the
+    // plate: B lit at Night, b by Day (Bartok Bela, patronymic first: "in the man's honor ... not its own sake but, conduction").
+    // Every grey of his controls is ink: near white at Night, near black by Day, at one of four levels, as each grey was set:
+    // bright, faded, dim, and the perimeter, fainter than any type. Colours that mean something (gold, cyan, his eyes and grip,
+    // Glint, the graphs, the meter) are left as they are; their trays are overlay, light at Night and dark by Day. So a person
+    // can take any plate, flip Bb, Bb, and keep the text that reads.
+    var BB = { plate: '', mode: '', stripe: 0.04 };    // plate: '' is Bela's own; mode: '' follows the plate, or 'night' / 'day'; stripe: the tristripe's strength
+    try { var bb0 = JSON.parse(localStorage.getItem('blinken-bb') || 'null'); if (bb0) { if (bb0.plate) BB.plate = bb0.plate; if (bb0.mode === 'night' || bb0.mode === 'day') BB.mode = bb0.mode; if (bb0.stripe >= 0) BB.stripe = Math.min(0.24, bb0.stripe); } } catch (e) {}
+    // THE TRISTRIPE (user1, 24 xi 2026): "a black-ice patch, so that even in Pear, the eye kind of slips around ... We therefore
+    // introduce the tristripe." Three bands across the plate at Bela's right, leaning as his grip and his epaulette lean, in ink
+    // at 4 in 100 to begin (user1's own setting), up to 24 (above it the stripes obscure the buttons, not their job); 0 takes it off; a slider in the bartok-bela card. Laid on the plate, under everything,
+    // so it shows less behind the screens. "It subdivides the mysterious space, so the eye can get used to a map."
+    var tri = document.createElement('div'); tri.id = 'bk-tristripe';
+    tri.style.cssText = 'position:absolute;inset:0;z-index:-1;overflow:hidden;border-radius:inherit;pointer-events:none';
+    for (var ti = 0; ti < 3; ti++) { var band = document.createElement('div'); band.style.cssText = 'position:absolute;top:-12px;bottom:-12px;width:22px;right:' + (157 - 35 * ti) + 'px;transform:skewX(25deg)'; tri.appendChild(band); }
+    box.insertBefore(tri, box.firstChild);
+    function bbSave() { try { localStorage.setItem('blinken-bb', JSON.stringify(BB)); } catch (e) {} }
+    // KEYS AND NAMES (user1, 24 xi 2026: "Bela's tricks are very much about vision. Nonetheless ... ARIA labels and tab
+    // navigation are the very minimum"): every control takes focus with Tab, answers Enter and Space, and has a name.
+    function keyable(el, label, role) {
+      if (!el || el.__bkKey) return; el.__bkKey = 1; el.tabIndex = 0; el.setAttribute('role', role || 'button');
+      el.setAttribute('aria-label', label || el.title || (el.textContent || '').trim());
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); } });
+    }
+    var OWN_PLATE = '#0b0d10';
+    function plateNow() { return BB.plate || OWN_PLATE; }
+    function rgbOf(c) {                                   // '#abc', '#aabbcc', 'rgb(..)', 'rgba(..)' -> [r, g, b, a]
+      c = String(c || '').trim(); var m;
+      if ((m = c.match(/^#([0-9a-f]{3})$/i))) return [parseInt(m[1][0] + m[1][0], 16), parseInt(m[1][1] + m[1][1], 16), parseInt(m[1][2] + m[1][2], 16), 1];
+      if ((m = c.match(/^#([0-9a-f]{6})$/i))) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16), parseInt(m[1].slice(4, 6), 16), 1];
+      if ((m = c.match(/^rgba?\(([^)]+)\)$/i))) { var p = m[1].split(',').map(parseFloat); return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1]; }
+      return null;
+    }
+    function lumOf(c) { var v = rgbOf(c); if (!v) return 0; var f = function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }; return 0.2126 * f(v[0]) + 0.7152 * f(v[1]) + 0.0722 * f(v[2]); }
+    function modeNow() { return BB.mode || (lumOf(plateNow()) > 0.18 ? 'day' : 'night'); }
+    var INK = { night: { rgb: '255,255,255', bright: 0.9, faded: 0.55, dim: 0.36, edge: 0.2 }, day: { rgb: '0,0,0', bright: 0.86, faded: 0.52, dim: 0.34, edge: 0.22 } };
+    function tierOf(c) {                                  // the grey as it was set, seen on Bela's own dark plate: which level it meant
+      var v = rgbOf(c); if (!v) return null;
+      var mx = Math.max(v[0], v[1], v[2]), mn = Math.min(v[0], v[1], v[2]);
+      if ((mx - mn) / 255 > 0.2 && v[3] > 0.3) return null;   // a colour that means something is left alone
+      var bg = [11, 13, 16], e = v.slice(0, 3).map(function (x, i) { return v[3] * x + (1 - v[3]) * bg[i]; });
+      var l = (Math.max(e[0], e[1], e[2]) + Math.min(e[0], e[1], e[2])) / 2 / 255;
+      return l >= 0.66 ? 'bright' : l >= 0.45 ? 'faded' : l >= 0.2 ? 'dim' : 'edge';
+    }
+    function inkFor(tier) { var k = INK[modeNow()]; return 'rgba(' + k.rgb + ',' + k[tier] + ')'; }
+    function inkEl(el) {                                  // one element's text and perimeter, from the greys it was given
+      var st = el.style, o = el.__bkInk || (el.__bkInk = {});
+      ['color', 'borderColor'].forEach(function (pr) {
+        var cur = st[pr]; if (!cur) return;
+        if (o[pr + 'Set'] && cur === o[pr + 'Set']) return;      // our own ink, already laid
+        var fm = cur.match(/^(rgba?\([^)]*\)|#[0-9a-f]+)/i); var t = fm && tierOf(fm[0]); if (!t) return;   // a colour that means something (or none): kept
+        o[pr] = cur; var ink = inkFor(t); st[pr] = ink; o[pr + 'Set'] = st[pr];
+        if (pr === 'color' && el.id && el.id.indexOf('bk-') === 0 && /border/.test(el.getAttribute('style') || '') && el.id !== 'bk-bb') { el.classList.toggle('bk-lit', t === 'bright'); el.setAttribute('aria-pressed', t === 'bright' ? 'true' : 'false'); }   // a button that is on wears the hover look (user1, 24 xi), and says so to a screen reader
+      });
+    }
+    function inkAll() {                                   // on a change of mode: every element from its own original grey again
+      [box].concat(Array.prototype.slice.call(box.querySelectorAll('*'))).forEach(function (el) {
+        if (/^(CANVAS)$/.test(el.tagName)) return;
+        var o = el.__bkInk; if (o) ['color', 'borderColor'].forEach(function (pr) { if (o[pr] && el.style[pr] === o[pr + 'Set']) { el.style[pr] = o[pr]; o[pr + 'Set'] = ''; } });
+        inkEl(el);
+      });
+    }
+    function chirpLit() {                                 // the chirp is lit while it is underway: while any of the four stripes burns
+      var go = $('bk-go'), sc = $('bk-scan'); if (!go || !sc) return;
+      go.classList.toggle('bk-lit', Array.prototype.some.call(sc.children, function (c) { var bg = (c.style.background || c.style.backgroundColor || '').replace(/\s/g, ''); return bg && bg !== '#12303f' && bg !== 'rgb(18,48,63)'; }));
+    }
+    var inkObs = new MutationObserver(function (ms) { var moved = false, scan = false; ms.forEach(function (m) { if (m.target === box) moved = true; if (m.target.parentNode && m.target.parentNode.id === 'bk-scan') scan = true; if (m.target.nodeType === 1 && m.target.tagName !== 'CANVAS') inkEl(m.target); }); if (scan) chirpLit(); if (moved && typeof rosePlace === 'function') rosePlace(); });   // and when he is moved, the rose's sheet goes with him
+    var print = $('bk-print'), bbBtn = document.createElement('span'), bbGear = document.createElement('span');
+    bbBtn.id = 'bk-bb'; bbBtn.style.cssText = (print ? print.style.cssText : '') + ';white-space:pre;user-select:none';
+    bbBtn.innerHTML = '<b id="bk-bb-B" style="font-weight:normal">B</b><b id="bk-bb-b" style="font-weight:normal">b</b>';
+    bbGear.id = 'bk-bb-gear'; bbGear.textContent = '⛮︎'; bbGear.title = 'the bartok-bela gear: the faceplate';
+    var lg = $('bk-lamp-gear'); bbGear.style.cssText = (lg ? lg.style.cssText : bbBtn.style.cssText) + ';user-select:none';
+    if (print && print.parentNode) { print.parentNode.insertBefore(bbGear, print.nextSibling); print.parentNode.insertBefore(bbBtn, bbGear); bbBtn.style.marginLeft = '8px'; }
+    var bbStyle = document.createElement('style'); bbStyle.id = 'bk-bb-style'; document.head.appendChild(bbStyle);
+    function bbPaint() {
+      var day = modeNow() === 'day', k = day ? '0,0,0' : '255,255,255';
+      // the trays: a screen's dead zone always darkens, in any mode ("else how do we know"; user1 on the white-film conspiracy);
+      // at Night more deeply, so it reads on a dark plate (on Bela's own, 0.35 of black is his old #070809 again). Their edges are ink.
+      var fill = day ? 0.157 : 0.35, edge = day ? 0.267 : 0.16, gfill = day ? 0.267 : 0.4, gedge = day ? 0.467 : 0.26;
+      bbStyle.textContent = '#blinken-clock { background: ' + plateNow() + ' !important; border-color: rgba(' + k + ',' + INK[modeNow()].edge + ') !important }' +
+        '#bk-gauges canvas { background: rgba(0,0,0,' + fill + ') !important; border: 1px solid rgba(' + k + ',' + edge + ') !important }' +
+        '#bk-vu { background: rgba(0,0,0,' + fill + ') !important; border: 1px solid rgba(' + k + ',' + (day ? fill : edge * 0.6) + ') !important }' +
+        '#bk-glint-tray { background: rgba(0,0,0,' + gfill + ') !important; border-color: rgba(' + k + ',' + gedge + ') !important }' +
+        '#bk-bb { border-color: rgba(136,136,136,0.65) !important }' +
+        '#blinken-clock span.bk-lit { border-color: #3f86d6 !important }';   // the hover look, worn by whatever is on or underway (user1, 24 xi)   // the one switch that lights itself: a mid grey edge on any plate, at Night or by Day, so a person who flipped it and looked away can always find the way back (user1, 23 xi)
+      Array.prototype.forEach.call(tri.children, function (band) { band.style.background = 'rgba(' + k + ',' + BB.stripe + ')'; });
+      $('bk-bb-B').style.color = day ? '#3a3f47' : '#cfcbc2'; $('bk-bb-b').style.color = day ? '#cfcbc2' : '#3a3f47';
+      bbBtn.title = day ? 'bartok-bela: Day, dark ink (press for Night)' : 'bartok-bela: Night, light ink (press for Day)';
+      inkAll();
+    }
+    bbBtn.addEventListener('click', function (e) { e.stopPropagation(); BB.mode = modeNow() === 'day' ? 'night' : 'day'; bbSave(); bbPaint(); if (card) showPlate(); });
+    // the gear's card: the faceplate, by picker, by hex, or by a word; and whether the ink follows the plate
+    var card = null, showPlate = function () {};
+    function bbCard() {
+      if (card) { card.remove(); card = null; return; }
+      card = document.createElement('div'); card.id = 'bk-bb-card';
+      var r = bbGear.getBoundingClientRect();
+      card.style.cssText = 'position:fixed;z-index:2147483001;left:' + Math.max(4, r.left - 180) + 'px;top:' + Math.max(4, r.top - 150) + 'px;width:280px;padding:10px 12px;background:#0b0d10;border:1px solid #1d2026;border-radius:6px;color:#8f98a5;font:11px/1.6 \'DejaVu Sans Mono\',\'Courier New\',monospace;box-shadow:0 6px 24px rgba(0,0,0,.5)';
+      var head = document.createElement('div'); head.style.cssText = 'display:flex;align-items:center;color:#cfcbc2;letter-spacing:.11em;margin-bottom:4px';
+      head.innerHTML = '<span style="flex:1">bartok-bela</span><span class="shut" title="close" style="cursor:pointer;color:#cfcbc2;border:1px solid #3a3f47;border-radius:3px;padding:0 6px;line-height:15px;letter-spacing:0;user-select:none">X</span>';   // [ X ]: a click target, Fitts paid in advance
+      head.querySelector('.shut').addEventListener('click', function () { card.remove(); card = null; }); card.appendChild(head);
+      var pl = document.createElement('label'); pl.style.cssText = 'display:flex;align-items:center;gap:8px;margin:4px 0 2px';
+      pl.innerHTML = '<span style="width:64px">faceplate</span><input type="color" style="width:28px;height:18px;padding:0;border:0;background:none"><span>#</span><input type="text" maxlength="7" spellcheck="false" style="width:58px;font:inherit;background:#00000028;color:#cfcbc2;border:1px solid #00000044;border-radius:3px;padding:0 3px">';
+      var col = pl.querySelector('input[type=color]'), hex = pl.querySelector('input[type=text]');
+      var CAP = 'cursor:pointer;color:#cfcbc2;border:1px solid #3a3f47;border-radius:999px;padding:0 7px;line-height:15px;white-space:nowrap;user-select:none';   // a capsule: a word that is a button (user1, 23 xi)
+      var inkLine = document.createElement('div'); inkLine.style.cssText = 'display:flex;align-items:center;gap:8px;margin:6px 0 0;white-space:nowrap';   // one line, never broken: no widows, no orphans
+      function inkSay() { inkLine.innerHTML = '<span style="width:64px;flex:none">ink</span><span style="color:#cfcbc2">' + (modeNow() === 'day' ? 'Day' : 'Night') + '</span>' + (BB.mode ? '<span>by Bb</span><span class="auto" title="hand the time of day back to the plate" style="' + CAP + '">as the plate</span>' : '<span>as the plate</span>'); var au = inkLine.querySelector('.auto'); if (au) { au.addEventListener('click', function () { BB.mode = ''; bbSave(); bbPaint(); showPlate(); }); keyable(au); } }
+      showPlate = function () { if (!card) return; col.value = plateNow(); hex.value = plateNow().slice(1); inkSay(); };
+      function setPlate(v) { BB.plate = v; BB.mode = ''; bbSave(); bbPaint(); showPlate(); }   // a new plate sets the time of day again
+      function takeHex(v) {                                // #001199 or 001199 or #019 or 019: taken with or without the #
+        var m = String(v).trim().replace(/^#/, '');
+        if (/^[0-9a-f]{3}$/i.test(m)) m = m.replace(/(.)/g, '$1$1');
+        if (!/^[0-9a-f]{6}$/i.test(m)) return false;
+        BB.plate = '#' + m.toLowerCase(); BB.mode = ''; bbSave(); bbPaint(); col.value = BB.plate; inkSay(); return true;
+      }
+      col.addEventListener('input', function () { BB.plate = col.value; BB.mode = ''; hex.value = col.value.slice(1); bbSave(); bbPaint(); inkSay(); });
+      hex.addEventListener('input', function () { hex.style.borderColor = takeHex(hex.value) || hex.value === '' ? '#00000044' : '#c0503a'; });
+      hex.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter' && takeHex(hex.value)) showPlate(); });
+      card.appendChild(pl);
+      var words = document.createElement('div'); words.style.cssText = 'display:flex;gap:8px;margin:4px 0 0 72px;white-space:nowrap';
+      words.innerHTML = '<span class="pear" style="' + CAP + '" title="pear: #5db663, close to real saturation; not avocado">Pear</span><span class="snow" style="' + CAP + '" title="snow: #f2f0ec">Snow</span><span class="noct" style="' + CAP + '" title="noct: Bela\'s own night plate, #0b0d10">Noct</span>';
+      words.querySelector('.pear').addEventListener('click', function () { setPlate('#5db663'); });
+      words.querySelector('.snow').addEventListener('click', function () { setPlate('#f2f0ec'); });
+      words.querySelector('.noct').addEventListener('click', function () { setPlate(''); });
+      card.appendChild(words); card.appendChild(inkLine);
+      ['.pear', '.snow', '.noct'].forEach(function (q) { keyable(words.querySelector(q)); }); keyable(head.querySelector('.shut'), 'close the bartok-bela card');
+      var sl = document.createElement('label'); sl.style.cssText = 'display:flex;align-items:center;gap:8px;margin:6px 0 0;white-space:nowrap';
+      sl.innerHTML = '<span style="width:64px;flex:none">tristripe</span><input type="range" min="0" max="0.24" step="0.01" style="flex:1"><span style="width:34px;text-align:right;color:#cfcbc2"></span>';
+      var sr = sl.querySelector('input'), so = sl.lastChild; sr.value = BB.stripe; so.textContent = Math.round(BB.stripe * 100) + '%';
+      sr.addEventListener('input', function () { BB.stripe = +sr.value; so.textContent = Math.round(BB.stripe * 100) + '%'; bbSave(); bbPaint(); });
+      card.appendChild(sl); showPlate();
+      card.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      document.body.appendChild(card);
+    }
+    bbGear.addEventListener('click', function (e) { e.stopPropagation(); bbCard(); });
+
+    // 4b [ @ ], THE ROSE (user1, 23 xi 2026): one's own stylesheet for the page, on and off by a click; its gear opens the sheet
+    // itself, a card some 76 columns wide and 12 lines tall above Bela, where the bluebox rides, stretched taller by its top bar.
+    // The sheet is kept (blinken-rose); until one is written it begins as Claude Clarion (xo), user1's own. In the long run it
+    // is to become a list of the app's targets with yes and no and a colour for each; not tonight.
+    var ROSE_SEED = "\n    :root {\n      --xo-mono: 'Iosevka', ui-monospace, 'SF Mono', Menlo, Consolas, Courier, monospace;\n      --xo-ink:  #e0e0e0;\n      --xo-you:  blue;\n      --xo-rule: #ffffff44;\n      --xo-size: 14px;\n      --xo-lead: 17.32px;\n      --surface-1: #000 !important;\n      --surface-2: #000 !important;\n      --surface-3: #000 !important;\n      --text-primary: #ddd !important;\n      color-scheme: dark;\n    }\n\n    .dframe-content,\n    [data-frame-mode=\"cowork\"] {\n      background: #000 !important;\n      border: 0 !important;\n      border-radius: 2px !important;\n    }\n\n    /* the composer */\n    .tiptap.ProseMirror,\n    .tiptap.ProseMirror:active {\n\n      text-rendering: optimizeSpeed;\n      -webkit-font-smoothing: none;\n\n      background: #000 !important;\n      color: var(--xo-ink) !important;\n      caret-color: var(--xo-ink) !important;\n      font-family: var(--xo-mono) !important;\n      font-size: var(--xo-size) !important;\n      line-height: 19px !important;\n      padding: 10px 12px !important;\n      border: 0 !important;\n      border-radius: 2px !important;\n      outline: none !important;\n    }\n    .tiptap.ProseMirror:focus,\n    .ProseMirror-focused {\n      outline: 2px solid #fff !important;\n      outline-offset: 1px !important;\n    }\n    .tiptap.ProseMirror p.is-editor-empty:first-child::before {\n      content: attr(data-placeholder) !important;\n      color: #000 !important;\n      opacity: 1 !important;\n    }\n\n    /* my lines */\n    .prose div {\n      text-rendering: optimizeSpeed;\n      -webkit-font-smoothing: none;\n      background: #000000bb;\n      font-family: var(--xo-mono) !important;\n      font-size: var(--xo-size);\n      line-height: var(--xo-lead) !important;\n      color: #ddd !important;\n    }\n    .prose div b {\n      color: #fff !important;\n    }\n\n    /* your lines, held to the same grid */\n    [data-cds=\"UserMessage\"] {\n      color: var(--xo-you) !important;\n      background: #000;\n      font-family: var(--xo-mono) !important;\n      border-right: 1px solid var(--xo-rule) !important;\n      margin-top: -12px;\n      margin-bottom: -32px;\n      padding: 0 !important;\n    }\n    [data-cds=\"UserMessage\"] p.whitespace-pre-wrap.break-words {\n    \n      text-rendering: optimizeSpeed;\n      -webkit-font-smoothing: none;\n\n      font-size: var(--xo-size) !important;\n      line-height: var(--xo-lead) !important;\n    }\n    [data-cds=\"UserMessage\"] .rounded-card {\n      margin-bottom: -24px;\n    }\n\n    /* the spark, flipped for real this time */\n    [data-cds=\"spark\"] {\n      filter: invert(1);\n    }\n\n    [data-disclaimer=\"true\"] {\n      display: none;\n    }\n    \n    pre.code-block__code code {\n      font-family: Iosevka, Consolas, monospace !important;\n      font-size: 13px !important;\n      line-height: 16px;\n    }\n    \n    /* the class list of a response block, kept for reference.\n       (This was wrapped in <!-- -->, which CSS does not read as a\n       comment: it ran on into the next selector and killed that rule.)\n        font-claude-response relative leading-[1.65rem] [&_pre>div]:bg-bg-000/50 [&_pre>div]:border-0.5 [&_pre>div]:border-border-400 [&_.ignore-pre-bg>div]:bg-transparent [&_.standard-markdown_:is(p,blockquote,h1,h2,h3,h4,h5,h6)]:pl-[var(--msg-text-inset,0.5rem)] [&_.standard-markdown_:is(p,blockquote,ul,ol,h1,h2,h3,h4,h5,h6)]:pr-8 [&_.progressive-markdown_:is(p,blockquote,h1,h2,h3,h4,h5,h6)]:pl-[var(--msg-text-inset,0.5rem)] [&_.progressive-markdown_:is(p,blockquote,ul,ol,h1,h2,h3,h4,h5,h6)]:pr-8 [&_.md-table-scroll]:pl-[var(--msg-block-inset,0.5rem)] [&_.md-table-scroll]:pr-[var(--msg-inset-end,0.5rem)]\n    */\n\n    /* Live for the first time, 3 x 2026. Two backslashes: inside a JS\n       template string one is eaten, and a bare ! is not a selector.\n       To mute it again, rename the class here to anything unused. */\n    .\\\\!leading-relaxed {\n      line-height: 18px !important;\n      font-family: Iosevka, Consolas, monospace !important;\n      font-size: 12px !important;\n    }\n    \n    p[dir=\"ltr\"] code[dir=\"ltr\"] {\n      color: #ffc976;\n    }\n\n    [data-autoscroll-container] :where(:not(.draggable,.draggable-none)) {\n      /*\n      letter-spacing: 0.32px;\n      app-region: initial;\n      */\n    }\n       \n    [data-cds=\"ChatComposer\"] > div:first-child {\n      /* styles */\n      margin-bottom: 52px;\n    }\n    \n    .cds-user-message-body {\n      width: 540px !important;\n    }\n    \n    .cds-user-message-body .text-body {\n      line-height: 17.32px !important;\n    }\n    \n    .AssistantMessage .contents p {\n      color: yellow !important; \n      margin-right: 0px !important;\n      padding-right: 0px !important;\n    }\n    \n    data-perf-row=\"human\" {\n      width: 500px;\n    }\n    \n    data-cds=\"UserMessage\" {\n      \n    }\n\n  ";
+    var rose = { on: false, css: null, h: 12 * 16 };
+    try { var rs0 = JSON.parse(localStorage.getItem('blinken-rose') || 'null'); if (rs0) { rose.on = !!rs0.on; if (typeof rs0.css === 'string') rose.css = rs0.css; if (rs0.h >= 64) rose.h = rs0.h; } } catch (e) {}
+    if (rose.css === null) rose.css = ROSE_SEED;
+    function roseSave() { try { localStorage.setItem('blinken-rose', JSON.stringify(rose)); } catch (e) {} }
+    var roseBtn = document.createElement('span'), roseGear = document.createElement('span');
+    roseBtn.id = 'bk-rose'; roseBtn.textContent = '@'; roseBtn.style.cssText = bbBtn.style.cssText; roseBtn.style.marginLeft = '8px';
+    roseGear.id = 'bk-rose-gear'; roseGear.textContent = '\u26ee\ufe0e'; roseGear.title = 'the rose: the sheet itself'; roseGear.style.cssText = bbGear.style.cssText;
+    bbBtn.parentNode.insertBefore(roseBtn, bbBtn); bbBtn.parentNode.insertBefore(roseGear, bbBtn);   // the rose first, then Bb: where his hand reaches for each (user1, 24 xi)
+    var roseStyle = document.createElement('style'); roseStyle.id = 'bk-rose-style'; document.head.appendChild(roseStyle);
+    function rosePaint() {
+      roseStyle.textContent = rose.on ? rose.css : '';
+      roseBtn.style.color = rose.on ? '#cfcbc2' : '#8f98a5';   // bright when the sheet is on; Bela's ink takes it from there
+      roseBtn.title = rose.on ? 'the rose: your stylesheet is on (press to take it off)' : 'the rose: your stylesheet is off (press to put it on)';
+    }
+    roseBtn.addEventListener('click', function (e) { e.stopPropagation(); rose.on = !rose.on; roseSave(); rosePaint(); });
+    var roseCard = null;
+    function rosePlace() {                                // where the bluebox rides: over his head; above the bluebox if it is out
+      if (!roseCard) return; var br = box.getBoundingClientRect(), w = roseCard.offsetWidth, bl = document.getElementById('bk-blue');
+      var over = bl && bl.style.display !== 'none' && bl.offsetHeight ? bl.offsetHeight + 1 : 0;
+      roseCard.style.left = Math.max(4, Math.round(br.left + br.width / 2 - w / 2)) + 'px';
+      roseCard.style.bottom = Math.round(window.innerHeight - br.top + 1 + over) + 'px';   // one px over his head, or over the bluebox, as the bluebox now rides
+    }
+    function roseOpen() {
+      if (roseCard) { roseCard.remove(); roseCard = null; return; }
+      roseCard = document.createElement('div'); roseCard.id = 'bk-rose-card';
+      roseCard.style.cssText = 'position:fixed;z-index:2147483001;width:78ch;max-width:calc(100vw - 8px);background:#0b0d10;border:1px solid #1d2026;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.5);font:12px/16px \'DejaVu Sans Mono\',\'Courier New\',monospace;color:#8f98a5';
+      var bar = document.createElement('div');
+      bar.style.cssText = 'display:flex;align-items:center;gap:10px;padding:3px 10px;border-bottom:1px solid #1d2026;cursor:ns-resize;user-select:none';
+      bar.title = 'drag up or down to make the sheet taller or shorter';
+      var RCAP = 'cursor:pointer;color:#cfcbc2;border:1px solid #3a3f47;border-radius:999px;padding:0 8px;line-height:15px;user-select:none';
+      bar.innerHTML = '<span style="color:#cfcbc2;letter-spacing:.11em">@ rose</span><span style="flex:1"></span><span class="save" title="save the sheet as a file you keep" style="' + RCAP + '">save</span><span class="load" title="load a sheet from a file" style="' + RCAP + '">load</span><span class="on" style="cursor:pointer;border:1px solid #3a3f47;border-radius:999px;padding:0 8px;line-height:15px;min-width:22px;text-align:center;user-select:none"></span><span class="shut" title="close" style="cursor:pointer;color:#cfcbc2;border:1px solid #3a3f47;border-radius:3px;padding:0 6px;line-height:15px;letter-spacing:0;user-select:none">X</span>';   // ( on ) ( off ) [ X ]
+      var ta = document.createElement('textarea'); ta.spellcheck = false; ta.value = rose.css;
+      ta.style.cssText = 'display:block;box-sizing:border-box;width:100%;height:' + rose.h + 'px;margin:0;padding:6px 10px;resize:none;border:0;outline:none;background:rgba(0,0,0,.35);color:#cfcbc2;font:inherit;tab-size:2;white-space:pre;overflow:auto';
+      roseCard.appendChild(bar); roseCard.appendChild(ta); document.body.appendChild(roseCard);
+      var onW = bar.querySelector('.on'); function sayOn() { onW.textContent = rose.on ? 'on' : 'off'; onW.title = rose.on ? 'the sheet is on: press to take it off' : 'the sheet is off: press to put it on'; onW.style.color = rose.on ? '#cfcbc2' : '#8f98a5'; onW.style.borderColor = rose.on ? '#3f86d6' : '#3a3f47'; }
+      onW.addEventListener('click', function (e) { e.stopPropagation(); rose.on = !rose.on; roseSave(); rosePaint(); sayOn(); });
+      bar.querySelector('.shut').addEventListener('click', function (e) { e.stopPropagation(); roseCard.remove(); roseCard = null; });
+      // (save) and (load): the sheet lives in the app's own storage, which an app may clear; a file of one's own keeps it (24 xi)
+      bar.querySelector('.save').addEventListener('click', function (e) { e.stopPropagation(); var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rose.css], { type: 'text/css' })); a.download = 'bela rose .css'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000); });
+      var pick = document.createElement('input'); pick.type = 'file'; pick.accept = '.css,.txt,text/css,text/plain'; pick.style.display = 'none'; roseCard.appendChild(pick);
+      bar.querySelector('.load').addEventListener('click', function (e) { e.stopPropagation(); pick.value = ''; pick.click(); });
+      pick.addEventListener('change', function () { var f = pick.files && pick.files[0]; if (!f) return; var rd = new FileReader(); rd.onload = function () { rose.css = String(rd.result); ta.value = rose.css; roseSave(); rosePaint(); }; rd.readAsText(f); });
+      ['.save', '.load', '.on'].forEach(function (q) { keyable(bar.querySelector(q)); }); keyable(bar.querySelector('.shut'), 'close the rose');
+      ta.addEventListener('input', function () { rose.css = ta.value; roseSave(); rosePaint(); });
+      ta.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Tab') { e.preventDefault(); var a = ta.selectionStart, b2 = ta.selectionEnd; ta.value = ta.value.slice(0, a) + '  ' + ta.value.slice(b2); ta.selectionStart = ta.selectionEnd = a + 2; rose.css = ta.value; roseSave(); rosePaint(); } });
+      var drag = null;                                   // the top bar stretches the sheet: up is taller
+      bar.addEventListener('pointerdown', function (e) { if (e.target.closest('.on, .shut, .save, .load')) return; drag = { y: e.clientY, h: ta.offsetHeight }; bar.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
+      bar.addEventListener('pointermove', function (e) { if (!drag) return; rose.h = Math.max(64, Math.min(window.innerHeight - 120, drag.h + (drag.y - e.clientY))); ta.style.height = rose.h + 'px'; });
+      bar.addEventListener('pointerup', function () { if (drag) { drag = null; roseSave(); } });
+      roseCard.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      sayOn(); rosePlace();
+    }
+    roseGear.addEventListener('click', function (e) { e.stopPropagation(); roseOpen(); });
+    window.addEventListener('resize', rosePlace);
+    rosePaint();
+
+    // 5 THE TRAYS (user1, 23 xi 2026): "clear VFD plates set above continuous faceplate." Each screen is glass over the plate, its
+    // tint and edge laid by bbPaint as overlay. The meter is 126 px wide, its two columns 12 px from either side. Glint lies on a
+    // tray of his own and is added to it with plus-lighter, which shows his back grid.
+    var vuC = $('bk-vu'); if (vuC) vuC.width = 126;
+    var gl = $('bk-glint');
+    if (gl && !$('bk-glint-tray')) {
+      var tray = document.createElement('div'); tray.id = 'bk-glint-tray';
+      tray.style.cssText = 'position:absolute;left:' + gl.style.left + ';top:' + gl.style.top + ';width:' + gl.style.width + ';height:' + gl.style.height + ';box-sizing:border-box;border:1px solid transparent;border-radius:5px;pointer-events:none';
+      gl.parentNode.insertBefore(tray, gl);
+      gl.style.background = 'transparent'; gl.style.boxShadow = 'none'; gl.style.mixBlendMode = 'plus-lighter';
+    }
+    bbPaint(); inkObs.observe(box, { attributes: true, attributeFilter: ['style'], subtree: true });
+    var keysStyle = document.createElement('style'); keysStyle.id = 'bk-keys-style';
+    keysStyle.textContent = '#blinken-clock [tabindex]:focus-visible, #bk-bb-card [tabindex]:focus-visible, #bk-rose-card [tabindex]:focus-visible { outline: 1px solid #3f86d6 !important; outline-offset: 1px }';
+    document.head.appendChild(keysStyle);
+    Array.prototype.forEach.call(box.querySelectorAll('[id^="bk-"]'), function (el) {
+      if (/^bk-(tristripe|glint-tray|vu|scan|status|status-view|row3|head|voice|eat)$/.test(el.id)) return;
+      if (/border/.test(el.getAttribute('style') || '') || el.id === 'bk-led' || el.id === 'bk-glint') keyable(el);
+    });
+    keyable($('bk-x'), 'take Bela down');
+    Array.prototype.forEach.call(($('bk-gauges') || box).querySelectorAll('#bk-gauges canvas'), function (c) { keyable(c, 'gauge: ' + c.title + ' (press to let it notice, or keep it quiet)'); });
+    keyable(view, 'the status line: press to see the rest of a long message');
+    if (name) keyable(name, 'Vespers on GitHub', 'link');
+    rowsStop = function () { if (keysStyle) keysStyle.remove(); eatObs.disconnect(); inkObs.disconnect(); window.removeEventListener('resize', fitEat); window.removeEventListener('resize', rosePlace); bbStyle.remove(); roseStyle.remove(); if (card) card.remove(); if (roseCard) roseCard.remove(); };
   })();
 
   function stop() { btn.remove(); if (head) head.removeEventListener('pointerup', dragged); delete window.__flapStop; if (rowsStop) rowsStop(); }
@@ -5500,120 +5785,6 @@
   }
   console.log('[flap] ( v^ ) set. frame ' + (frame() ? 'found' : 'NOT found') + '. __flapStop() to remove.');
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ==== ECOUTER BEGIN: ecouter.js (speaks) with the lamp (tints), written by ecouter\repo.make.js; folded here by bela.make.js. Do not edit here. ==== */
 (function (global, outer) {
   var root = {}, module, exports;
@@ -6071,7 +6242,7 @@
     if (peak > 0) for (i = 0; i < n; i++) out[i] = out[i] / peak * 0.9;
     return out;
   }
-  var fs = typeof require === 'function' && typeof window === 'undefined' ? require('fs') : null, LARDER = 'larder';
+  var fs = typeof require === 'function' && typeof window === 'undefined' ? require('fs') : null;
   function hash(x, tag) {
     var h = 0x811c9dc5, i, v;
     for (i = 0; i < x.length; i++) { v = Math.round(x[i] * 32767) & 0xffff; h ^= v; h = Math.imul(h, 0x01000193); }
@@ -6079,10 +6250,11 @@
     return (h >>> 0).toString(16);
   }
   function kept(x, tag, cook) {
-    if (!fs) return cook();
-    var name = LARDER + '/' + hash(x, tag) + '.f32', b, out, i;
+    var dir = CHAIN.cache;
+    if (!fs || !dir) return cook();
+    var name = dir + '/' + hash(x, tag) + '.f32', b, out, i;
     if (fs.existsSync(name)) { b = fs.readFileSync(name); return new Float32Array(b.buffer, b.byteOffset, b.byteLength / 4).slice(); }
-    out = cook(); try { fs.mkdirSync(LARDER); } catch (e) {}
+    out = cook(); try { fs.mkdirSync(dir); } catch (e) {}
     b = new Uint8Array(out.buffer, out.byteOffset, out.byteLength); fs.writeFileSync(name, b);
     return out;
   }
@@ -6101,15 +6273,17 @@
     if (s.ess) { x = ess(x, SR); steps.push('ess'); }
     return { pcm: x, sr: SR, steps: steps };
   }
-  var CHAIN = { make: make, settings: settings, house: house, score: score, PLAIN: PLAIN, HOUSE_NAME: HOUSE_NAME, PRESETS: PRESETS, SR: SR };
+  var CHAIN = { make: make, settings: settings, house: house, score: score, PLAIN: PLAIN, HOUSE_NAME: HOUSE_NAME, PRESETS: PRESETS, SR: SR, cache: 'temp-cache' };
   if (typeof module !== 'undefined' && module.exports) module.exports = CHAIN;
   else root.ECOUTER = CHAIN;
 })(root);
 (function (root) {
   'use strict';
   var VENT = { s: [4600, 1600], sh: [3000, 2000], f: [1500, 3500], th: [4000, 3500], t: [4000, 2500] };
-  var HISS = root.VOICEBOX ? root.VOICEBOX.HISS
-    : typeof require === 'function' ? require('./voicebox.js').HISS : VENT;
+  var HISS = root.VOICEBOX ? root.VOICEBOX.HISS : (function () {
+    if (typeof require !== 'function') return VENT;
+    try { return require('./voicebox.js').HISS || VENT; } catch (e) { return VENT; }
+  })();
   var F = {
     IY: [270, 2290, 3010], IH: [390, 1990, 2550],
     EH: [530, 1840, 2480], AE: [660, 1720, 2410],
@@ -6783,7 +6957,7 @@ low⠀⠀⠀⠀⠀<|.⠀AA⠀⠀>|.⠀AE⠀⠀x|.⠀AA⠀⠀⠀⠀<+.⠀AO⠀⠀
       var c = chars[i];
       var oct = Math.log(c.f0 / pitchHome) / Math.LN2;
       c.sat = Math.min(1, Math.abs(oct) / full) * (c.voice > 0 ? 1 : 0) * (o.vivid === undefined ? 1 : o.vivid);
-      var mode = o.mode || (o.omnia ? 'omnia' : 'viriditas'), turn = step * oct, whole = 180 * Math.max(-1, Math.min(1, oct / full));
+      var mode = o.mode || 'omnia', turn = step * oct, whole = 180 * Math.max(-1, Math.min(1, oct / full));
       if (mode === 'none') { c.hue = ((homeHue + turn) % 360 + 360) % 360; c.css = css(c.hue, 0, white); }
       else if (mode === 'omnia') { c.hue = ((homeHue + whole) % 360 + 360) % 360; c.css = css(c.hue, c.sat, white, floor, knee, ceiling); }
       else if (mode === 'vivificat') { var lean = o.lean === undefined ? 0.62 : o.lean; c.hue = ((homeHue + turn + (whole - turn) * lean) % 360 + 360) % 360; c.css = css(c.hue, c.sat * (mix + (1 - mix) * lean), white, floor, knee, ceiling); }
@@ -6849,7 +7023,7 @@ low⠀⠀⠀⠀⠀<|.⠀AA⠀⠀>|.⠀AE⠀⠀x|.⠀AA⠀⠀⠀⠀<+.⠀AO⠀⠀
   if (typeof module !== 'undefined' && module.exports) module.exports = LAMP;
   else root.LAMP = LAMP;
 })(root);
-  function read(text) { return root.BELL.has(text) ? root.BELL.read(text) : root.LEXILLOGUE.say(text); }
+  function read(text) { return root.BELL && root.BELL.has(text) ? root.BELL.read(text) : root.LEXILLOGUE.say(text); }
   function frames(text, o) {
     o = o || {}; var v = o.voice || {}, tune = o.tune || (v.conduction === false ? 'apology' : 'conduction');
     return root.PHONES.frames(o.codes || read(text), { tune: tune, f0: o.f0, pause: o.pause });
@@ -6864,12 +7038,199 @@ low⠀⠀⠀⠀⠀<|.⠀AA⠀⠀>|.⠀AE⠀⠀x|.⠀AA⠀⠀⠀⠀<+.⠀AO⠀⠀
   function lead(pcm, seconds) { var n = Math.round((seconds === undefined ? 0.333 : seconds) * root.ECOUTER.SR), out = new Float32Array(n + pcm.length); out.set(pcm, n); return out; }
   var LIB = {
     say: say, wav: wav, lead: lead, frames: frames, codes: read, trace: root.LEXILLOGUE.trace, SR: root.ECOUTER.SR,
-    bell: root.BELL.codes, notice: root.BELL.notice, has: root.BELL.has, BELL: root.BELL,
-    tint: root.LAMP.tint, html: root.LAMP.html, LAMP: root.LAMP,
+    bell: root.BELL && root.BELL.codes, notice: root.BELL && root.BELL.notice, has: root.BELL && root.BELL.has, BELL: root.BELL,
+    tint: root.LAMP && root.LAMP.tint, html: root.LAMP && root.LAMP.html, LAMP: root.LAMP,
     VOICEBOX: root.VOICEBOX, GUST: root.GUST, CHAIN: root.ECOUTER, PHONES: root.PHONES, RULES: root.NRL_RULES, LEXILLOGUE: root.LEXILLOGUE
   };
   if (outer) outer.exports = LIB; else global.ECOUTER = LIB;
 })(typeof window !== 'undefined' ? window : this, typeof module !== 'undefined' && module.exports ? module : null);
+(function (hang) {
+  if (typeof ECOUTER !== 'undefined') hang(ECOUTER);
+  else if (typeof module !== 'undefined' && module.exports) { module.exports = hang; hang(require('./ecouter.min.js')); }
+  else throw new Error('ecouter-score.js: load ecouter.js or ecouter-speech.js first');
+})(function (E) {
+  var root = { PHONES: E.PHONES, LEXILLOGUE: E.LEXILLOGUE }, module, exports;
+(function (root) {
+  'use strict';
+  var L = root.LEXILLOGUE || require('./lexillogue.js');
+  var P = root.PHONES || require('./phones.js');
+  function sounded(c) { return /[A-Za-z]/.test(c); }
+  function copy(f) { var o = {}, k; for (k in f) o[k] = f[k]; return o; }
+  function again(score, frames) { return { codes: score.codes, word: score.word, frames: frames }; }
+  function fromCodes(text, o) {
+    var codes = [], word = [], bits = String(text).split(' '), j = -1, i, k, c;
+    o = o || {};
+    for (i = 0; i < bits.length; i++) {
+      if (!bits[i]) continue;
+      if (!sounded(bits[i])) { if (j >= 0) { codes.push(bits[i]); word.push(j); codes.push(' '); word.push(j); } continue; }
+      c = []; try { c = P.split(bits[i]).filter(sounded); } catch (e) {}
+      if (!c.length) continue;
+      j++; for (k = 0; k < c.length; k++) { codes.push(c[k]); word.push(j); }
+      codes.push(' '); word.push(j);
+    }
+    return { codes: codes, word: word, frames: P.frames(codes, { f0: o.f0 || 118, tune: o.tune }) };
+  }
+  function read(words, punct, o) {
+    var codes = [], word = [], j, i, c;
+    punct = punct || []; o = o || {};
+    for (j = 0; j < words.length; j++) {
+      c = [];
+      try { c = P.split(L.say(words[j]).trim().replace(/ /g, '')).filter(sounded); } catch (e) {}
+      for (i = 0; i < c.length; i++) { codes.push(c[i]); word.push(j); }
+      codes.push(' '); word.push(j);
+      if (punct[j]) { codes.push(punct[j]); word.push(j); codes.push(' '); word.push(j); }
+    }
+    return { codes: codes, word: word, frames: P.frames(codes, { f0: o.f0 || 118, tune: o.tune }) };
+  }
+  function tone(score, k) {
+    if (!k || k === 1) return again(score, score.frames.map(copy));
+    return again(score, score.frames.map(function (f) {
+      var o = copy(f);
+      if (o.f0) o.f0 *= k;
+      if (o.f) o.f = o.f.map(function (h) { return h * k; });
+      if (o.at) o.at = [o.at[0] * k, o.at[1] * k];
+      return o;
+    }));
+  }
+  function fit(score, slots, gaps) {
+    var codes = score.codes, word = score.word, fr = score.frames, W = slots.length, j, i, f;
+    var phon = new Float64Array(W), paus = new Float64Array(W), kp = [], kq = [];
+    gaps = gaps || [];
+    for (i = 0; i < fr.length; i++) { f = fr[i]; j = word[f.ci]; if (j === undefined) continue; if (sounded(codes[f.ci])) phon[j] += f.ms; else paus[j] += f.ms; }
+    for (j = 0; j < W; j++) {
+      var slot = slots[j], own = slot - (gaps[j] || 0);
+      var k = phon[j] ? Math.max(0.6, Math.min(1.7, own * 0.92 / phon[j])) : 1, rest = slot - k * phon[j];
+      if (!paus[j] || rest < 2) { rest = paus[j] ? 2 : 0; k = phon[j] ? Math.max(0.05, (slot - rest) / phon[j]) : 1; }
+      kp[j] = k; kq[j] = paus[j] ? rest / paus[j] : 1;
+    }
+    return again(score, fr.map(function (f) {
+      var j = word[f.ci], o = copy(f);
+      if (j !== undefined) o.ms = Math.max(0.5, f.ms * (sounded(codes[f.ci]) ? kp[j] : kq[j]));
+      return o;
+    }));
+  }
+  function lift(score, flags, k) {
+    k = k || 1.13;
+    return again(score, score.frames.map(function (f) {
+      var j = score.word[f.ci], o = copy(f);
+      if (j !== undefined && flags[j] && o.f0) o.f0 *= k;
+      return o;
+    }));
+  }
+  var DEGREES = [0, 2, 4, 7, 12, 14, 16, 19];
+  var HEIGHT = { IY: 1, UW: 1, IH: 0.7, UH: 0.7, EY: 0.3, OW: 0.3, AE: -0.3, AA: -0.6, AY: -0.3, AW: -0.3 };
+  function vowel(c) { return /^(IY|IH|EY|EH|AE|AA|AO|OW|UH|UW|ER|AX|AH|AY|AW|OY)$/.test(c); }
+  function sing(score, amount, tonic) {
+    var codes = score.codes, word = score.word, out = score.frames.map(copy), sg = amount, TON = tonic || 113.3;
+    if (!(sg > 0)) return again(score, out);
+    var syl = [], a, b, i, q, vs, f, v, e;
+    for (i = 0; i < codes.length; i++) syl.push(-1);
+    for (a = 0; a < codes.length;) {
+      b = a; while (b < codes.length && word[b] === word[a]) b++;
+      vs = []; for (i = a; i < b; i++) if (vowel(codes[i])) vs.push(i);
+      for (i = a, q = 0; i < b; i++) { if (!sounded(codes[i])) continue; while (q < vs.length && vs[q] < i) q++; syl[i] = vs.length ? vs[Math.min(q, vs.length - 1)] : -1; }
+      a = b;
+    }
+    var sum = {}, held = {};
+    for (i = 0; i < out.length; i++) {
+      f = out[i]; v = syl[f.ci];
+      if (v === undefined || v < 0 || !f.f0 || !(f.voice > 0.03)) continue;
+      e = sum[v] || (sum[v] = [0, 0]); e[0] += Math.log(f.f0) * f.ms; e[1] += f.ms;
+    }
+    for (v in sum) {
+      e = sum[v];
+      var st = 12 * Math.log2(Math.exp(e[0] / e[1]) / TON) * (1 + 2 * sg) + (HEIGHT[codes[v]] || 0) * 3 * sg, best = DEGREES[0], d;
+      for (d = 0; d < DEGREES.length; d++) if (Math.abs(DEGREES[d] - st) < Math.abs(best - st)) best = DEGREES[d];
+      held[v] = TON * Math.pow(2, best / 12);
+    }
+    for (i = 0; i < out.length; i++) { f = out[i]; var h = held[syl[f.ci]]; if (h && f.f0) f.f0 = Math.exp((1 - sg) * Math.log(f.f0) + sg * Math.log(h)); }
+    return again(score, out);
+  }
+  var SCORE = { read: read, fromCodes: fromCodes, tone: tone, fit: fit, lift: lift, sing: sing, DEGREES: DEGREES, HEIGHT: HEIGHT };
+  if (typeof module !== 'undefined' && module.exports) module.exports = SCORE;
+  else root.SCORE = SCORE;
+})(root);
+(function (root) {
+  'use strict';
+  var S = root.SCORE || require('./score.js');
+  var NUAGE = { time: 0.86, rateArc: 0.22, pitch: 1.5, pitchArc: 0.07, dot: 0.025, tract: 1.13, breath: 1, hiss: 1 };
+  var MIRIA = { time: 0.78, rateArc: 0.36, pitch: 1.72, pitchArc: 0.13, dot: 0.05, tract: 1.19, breath: 0.35, hiss: 1.25 };
+  var BLANDO = { time: 1.12, rateArc: 0, pitch: 0.87, pitchArc: 0, dot: 0, tract: 0.97, breath: 0.45, hiss: 1.1, flat: 0.72, even: 0.45 };
+  var ARTHUR = { time: 1 / 1.08, rateArc: -0.08, pitch: 1.0595, pitchArc: -0.03, dot: -0.01, tract: 0.95, breath: 1.15, hiss: 0.9 };
+  var LAUREN = { time: 0.86, rateArc: 0.22, pitch: 1.5, pitchArc: 0.04, dot: 0.025, tract: 1.13, breath: 1.5, hiss: 0.9 };
+  var CAST = [
+    { name: 'phillippe', kin: 'Men', arc: null, song: 0.34,
+      says: 'Stock Ecouter, with nothing done to him. Quick, high and earnest: he is five, and trying hard.' },
+    { name: 'nuage', kin: 'Women', arc: NUAGE, song: 0.34,
+      says: 'The small cloud. She begins slower and lower, ends faster and higher, and is done in 86 parts of his hundred.' },
+    { name: 'miria', kin: 'Women', arc: MIRIA, tone: 1.03, speed: 1.04, song: 0.63, steady: 0.87,
+      says: 'All that Nuage is, nearly crackingly too much: too clear, too singing, too tight.' },
+    { name: 'lauren', kin: 'Women', arc: LAUREN, tone: 0.86, speed: 0.96, song: 0.34, steady: 0.65,
+      says: 'Nuage with more breath and a gentler rise, tuned low.' },
+    { name: 'arthur', kin: 'Men', arc: ARTHUR, song: 0.53,
+      says: 'The very slightest inverse of Nuage, reservedly: a Manner of Ecouter, where she is a Grace of it.' },
+    { name: 'obelus', kin: 'Men', arc: ARTHUR, tone: 1.03, speed: 0.83, song: 0.53,
+      says: 'Arthur with the tape run at about four fifths: a warm, slow, fuller voice, found by throwing the line a little slow.' },
+    { name: 'rudolf', kin: 'Men', arc: ARTHUR, tone: 0.96, speed: 0.98, song: 0.61,
+      says: 'Arthur, tuned a little lower and more sung.' },
+    { name: 'blando', kin: 'Men', arc: BLANDO, song: 0.28,
+      says: 'The human, as a jest, voiced as a computer: most of the tone and most of the time taken out, and only most.' }
+  ];
+  var PLAIN = { tone: 1, speed: 1, song: 0.34, steady: 0.79 };
+  function get(name) {
+    var i, v, k, out;
+    for (i = 0; i < CAST.length; i++) if (CAST[i].name === name) {
+      v = CAST[i]; out = {};
+      for (k in PLAIN) out[k] = PLAIN[k];
+      for (k in v) out[k] = v[k];
+      return out;
+    }
+    return null;
+  }
+  function arc(fr, V) {
+    if (typeof V === 'string') { var g0 = get(V); V = g0 ? g0.arc : null; }
+    if (!V) return fr.map(function (f) { var o = {}, k; for (k in f) o[k] = f[k]; return o; });
+    var sum = 0, i, out = [], acc = 0, raw = 0; for (i = 0; i < fr.length; i++) sum += fr[i].ms;
+    var dots = function (u) { return V.dot * (Math.exp(-Math.pow((u - 0.75) / 0.09, 2)) - Math.exp(-Math.pow((u - 0.25) / 0.09, 2))); };
+    var TAIL = V.tail === undefined ? 0.3 : V.tail, REST = V.rest === undefined ? -0.6 : V.rest;
+    for (i = 0; i < fr.length; i++) { var f = fr[i], u = sum ? (acc + f.ms / 2) / sum : 0.5, late = TAIL && u > 1 - TAIL ? (u - (1 - TAIL)) / TAIL : 0, ease = late * late * (3 - 2 * late), swell = (-Math.cos(Math.PI * u) + (V.dot ? dots(u) / Math.abs(V.dot) * 0.5 : 0)) * (1 - ease) + REST * ease; acc += f.ms;
+      var g = {}; for (var k in f) g[k] = f[k];
+      g.ms = f.ms * (1 - V.rateArc * swell) * (1 + 0.2 * late * late); raw += g.ms;
+      if (f.f0) g.f0 = f.f0 * V.pitch * (1 + V.pitchArc * swell + dots(u));
+      if (f.f) g.f = f.f.map(function (hz) { return hz * V.tract; });
+      if (f.at) g.at = [f.at[0] * V.tract, f.at[1] * V.tract];
+      if (f.breath) g.breath = f.breath * V.breath; if (f.hiss) g.hiss = Math.min(1, f.hiss * V.hiss);
+      out.push(g); }
+    if (V.flat || V.even) {
+      var n0 = 0, f0m = 0, msm = 0; for (i = 0; i < out.length; i++) { msm += out[i].ms; if (out[i].f0 && out[i].voice > 0.2) { f0m += out[i].f0; n0++; } } f0m = n0 ? f0m / n0 : 0; msm = out.length ? msm / out.length : 0;
+      for (i = 0; i < out.length; i++) { if (V.flat && out[i].f0 && f0m) out[i].f0 = out[i].f0 + (f0m - out[i].f0) * V.flat; if (V.even) out[i].ms = out[i].ms + (msm - out[i].ms) * V.even; } raw = 0; for (i = 0; i < out.length; i++) raw += out[i].ms; }
+    var k2 = raw ? sum * V.time / raw : 1; for (i = 0; i < out.length; i++) out[i].ms = out[i].ms * k2;
+    return out;
+  }
+  function on(score, name) { return { codes: score.codes, word: score.word, frames: arc(score.frames, name) }; }
+  function as(score, name, o) {
+    o = o || {};
+    var v = get(name) || get('phillippe'), tn = o.tone === undefined ? v.tone : o.tone, sg = o.song === undefined ? v.song : o.song;
+    var s = S.tone(on(score, v.arc), tn);
+    if (o.slots) s = S.fit(s, o.slots, o.gaps);
+    if (o.lift) s = S.lift(s, o.lift);
+    s = S.sing(s, sg, 113.3 * (v.arc ? v.arc.pitch : 1) * tn);
+    s.voice = { name: v.name, speed: o.speed === undefined ? v.speed : o.speed, steady: o.steady === undefined ? v.steady : o.steady };
+    return s;
+  }
+  var VOICES = { names: CAST.map(function (v) { return v.name; }), get: get, arc: arc, on: on, as: as, PLAIN: PLAIN };
+  if (typeof module !== 'undefined' && module.exports) module.exports = VOICES;
+  else root.VOICES = VOICES;
+})(root);
+  root.SCORE.say = function (score, o) {
+    o = o || {}; var st = E.CHAIN.settings(o.voice || E.CHAIN.PRESETS[E.CHAIN.HOUSE_NAME]);
+    var sd = o.steady !== undefined ? o.steady : (score.voice ? score.voice.steady : undefined);
+    if (sd !== undefined) st.wear = Math.round(sd * 100);
+    st.frames = score.frames; return E.CHAIN.make(st, o.turns).pcm;
+  };
+  root.SCORE.VOICES = root.VOICES; root.SCORE.arc = root.VOICES.on; root.SCORE.as = root.VOICES.as;
+  E.SCORE = root.SCORE; return root.SCORE;
+});
 /* ==== ECOUTER END ==== */
 /* ==== VIDOUTE BEGIN: the painter, folded here by bela.make.js from satchel\vidoute\vidoute.bundle.js. Do not edit here. ==== */
 /* vidoute.bundle.js -- written by satchel\vidoute\vidoute.bundle.make.js; do not edit. The painter of vidoutes (vidoute.js),
